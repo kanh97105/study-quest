@@ -10,8 +10,6 @@ from flask import (
     request,
     abort,
 )
-from urllib.parse import urlencode
-
 from models.library_model import (
     list_books,
     get_book,
@@ -158,45 +156,4 @@ def book_detail(book_id):
     if not book:
         abort(404)
 
-    # Chuẩn bị link quiz theo môn / chủ đề (không bắt buộc model quiz tồn tại)
-    subject_value = _get_field(book, "subject", "subject_name", "mon_hoc")
-    topic_value = _get_field(book, "topic", "topic_name", "chu_de")
-
-    quiz_by_subject_url = None
-    quiz_by_topic_url = None
-
-    if subject_value:
-        params = {"subject": str(subject_value)}
-        if topic_value:
-            params["topic"] = str(topic_value)
-        quiz_by_subject_url = "/quiz?" + urlencode(params)
-    if topic_value:
-        params = {"topic": str(topic_value)}
-        if subject_value:
-            params["subject"] = str(subject_value)
-        quiz_by_topic_url = "/quiz?" + urlencode(params)
-
-    return render_template(
-        "library/detail.html",
-        book=book,
-        quiz_by_subject_url=quiz_by_subject_url,
-        quiz_by_topic_url=quiz_by_topic_url,
-    )
-
-
-# ---------------------------------------------------------------------------
-# Tiện ích đọc field linh hoạt (hỗ trợ dict hoặc object)
-# ---------------------------------------------------------------------------
-def _get_field(obj, *names, default=None):
-    if obj is None:
-        return default
-    for name in names:
-        if isinstance(obj, dict):
-            if name in obj and obj[name] not in (None, ""):
-                return obj[name]
-        else:
-            if hasattr(obj, name):
-                value = getattr(obj, name)
-                if value not in (None, ""):
-                    return value
-    return default
+    return render_template("library/detail.html", book=book)

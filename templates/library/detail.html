@@ -1,6 +1,9 @@
 {% extends 'base.html' %}
 
 {% block title %}{{ book.title if book.title is defined else (book['title'] if book['title'] is defined else 'Chi tiết tài liệu') }} - Study Quest{% endblock %}
+{% block styles %}
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/library.css') }}">
+{% endblock %}
 
 {% block content %}
 {% set title = book.title if book.title is defined else (book['title'] if book['title'] is defined else 'Không có tiêu đề') %}
@@ -9,76 +12,45 @@
 {% set topic = book.topic if book.topic is defined else (book['topic'] if book['topic'] is defined else '') %}
 {% set category = book.category if book.category is defined else (book['category'] if book['category'] is defined else '') %}
 {% set description = book.description if book.description is defined else (book['description'] if book['description'] is defined else '') %}
-{% set rating = book.rating if book.rating is defined else (book['rating'] if book['rating'] is defined else None) %}
+{% set cover = book.cover_url if book.cover_url is defined else (book['cover_url'] if book['cover_url'] is defined else '') %}
 {% set link = book.resource_url if book.resource_url is defined else book['resource_url'] if book is mapping and 'resource_url' in book else None %}
 
-<section class="panel" style="margin-bottom: 1rem;">
-  <p class="muted" style="margin: 0 0 0.5rem;">
-    <a href="{{ url_for('library.list_books_view') }}">← Quay lại thư viện</a>
-  </p>
+<section class="library-page container">
+  <section class="library-detail">
+    <p class="library-back">
+      <a href="{{ url_for('library.list_books_view') }}">← Quay lại thư viện</a>
+    </p>
 
-  <h1 style="margin: 0 0 0.5rem;">{{ title }}</h1>
+    <div class="library-detail-layout">
+      {% if cover %}
+        <img class="library-detail-cover" src="{{ url_for('static', filename=cover) }}" alt="Ảnh minh họa {{ title }}">
+      {% endif %}
+      <div class="library-detail-copy">
+        <span class="library-eyebrow">TÀI LIỆU HỌC TẬP</span>
+        <h1>{{ title }}</h1>
 
-  {% if author %}
-    <p style="margin: 0 0 0.5rem;">✍️ <strong>Tác giả:</strong> {{ author }}</p>
-  {% endif %}
+        {% if author %}
+          <p class="library-detail-author"><strong>Tác giả:</strong> {{ author }}</p>
+        {% endif %}
 
-  <div style="display: flex; flex-wrap: wrap; gap: 0.35rem; margin-bottom: 0.75rem;">
-    {% if subject %}<span class="tag">📘 {{ subject }}</span>{% endif %}
-    {% if topic %}<span class="tag">📌 {{ topic }}</span>{% endif %}
-    {% if category %}<span class="tag">🏷️ {{ category }}</span>{% endif %}
-  </div>
+        <div class="library-tags">
+          {% if subject %}<span class="tag">{{ subject }}</span>{% endif %}
+          {% if topic %}<span class="tag">{{ topic }}</span>{% endif %}
+          {% if category %}<span class="tag">{{ category }}</span>{% endif %}
+        </div>
 
-  <p style="margin: 0 0 0.5rem;">
-    <strong>Đánh giá:</strong>
-    {% if rating is not none and rating != '' %}
-      ⭐ {{ rating }}
-    {% else %}
-      <span class="muted">Chưa có đánh giá</span>
-    {% endif %}
-  </p>
+        {% if description %}
+          <div class="library-detail-description">
+            <h2>Về tài liệu này</h2>
+            <p>{{ description }}</p>
+          </div>
+        {% endif %}
 
-  {% if description %}
-    <div style="margin: 0.75rem 0;">
-      <strong>Mô tả:</strong>
-      <p style="margin: 0.35rem 0 0;">{{ description }}</p>
+        {% if link %}
+          <a class="btn btn-primary" href="{{ link }}" target="_blank" rel="noopener noreferrer">Mở tài liệu</a>
+        {% endif %}
+      </div>
     </div>
-  {% endif %}
-
-  {% if link %}
-    <p style="margin: 0.75rem 0 0;">
-      <a class="btn" href="{{ link }}" target="_blank" rel="noopener noreferrer">
-        🔗 Mở tài liệu
-      </a>
-    </p>
-  {% else %}
-    <p class="muted" style="margin: 0.75rem 0 0;">Tài liệu này chưa có link đính kèm.</p>
-  {% endif %}
+  </section>
 </section>
-
-<section class="panel">
-  <h2 style="margin-top: 0;">🎯 Luyện tập với Quiz</h2>
-  <p class="muted">Chọn phạm vi ôn luyện dựa trên thông tin của tài liệu.</p>
-
-  <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
-    {% if quiz_by_subject_url %}
-      <a class="btn" href="{{ quiz_by_subject_url }}">
-        Quiz theo môn {% if subject %}"{{ subject }}"{% endif %}
-      </a>
-    {% endif %}
-    {% if quiz_by_topic_url %}
-      <a class="btn" href="{{ quiz_by_topic_url }}">
-        Quiz theo chủ đề {% if topic %}"{{ topic }}"{% endif %}
-      </a>
-    {% endif %}
-  </div>
-
-  {% if not quiz_by_subject_url and not quiz_by_topic_url %}
-    <p class="muted" style="margin: 0.5rem 0 0;">
-      Tài liệu chưa có thông tin môn học hoặc chủ đề để tạo Quiz.
-    </p>
-  {% endif %}
-</section>
-
-<script src="{{ url_for('static', filename='js/library.js') }}"></script>
 {% endblock %}

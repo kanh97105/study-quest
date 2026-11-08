@@ -1,66 +1,11 @@
 {% extends 'base.html' %}
 
 {% block title %}Thư viện tài liệu - Study Quest{% endblock %}
+{% block styles %}
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/library.css') }}">
+{% endblock %}
 
 {% block content %}
-<section class="panel" style="margin-bottom: 1rem;">
-  <h1 style="margin-top: 0;">📚 Thư viện tài liệu</h1>
-  <p class="muted">
-    Tìm kiếm theo tên tài liệu, tác giả hoặc mô tả. Có thể kết hợp với bộ lọc môn học và thể loại.
-  </p>
-
-  <form id="library-filter-form" method="get" action="{{ url_for('library.list_books_view') }}">
-    <div style="display: flex; flex-wrap: wrap; gap: 0.75rem; align-items: flex-end;">
-      <div style="flex: 1 1 260px; min-width: 220px;">
-        <label for="q" class="muted" style="display:block; margin-bottom: 0.25rem;">
-          Từ khóa
-        </label>
-        <input
-          type="text"
-          id="q"
-          name="q"
-          value="{{ keyword }}"
-          placeholder="Tên tài liệu, tác giả, mô tả..."
-          style="width: 100%; padding: 0.5rem;"
-        />
-      </div>
-
-      <div style="flex: 0 1 200px; min-width: 160px;">
-        <label for="subject" class="muted" style="display:block; margin-bottom: 0.25rem;">
-          Môn học
-        </label>
-        <select id="subject" name="subject" style="width: 100%; padding: 0.5rem;">
-          <option value="">-- Tất cả môn --</option>
-          {% for opt in subjects %}
-            <option value="{{ opt.value }}" {% if opt.value == selected_subject %}selected{% endif %}>
-              {{ opt.label }}
-            </option>
-          {% endfor %}
-        </select>
-      </div>
-
-      <div style="flex: 0 1 200px; min-width: 160px;">
-        <label for="category" class="muted" style="display:block; margin-bottom: 0.25rem;">
-          Thể loại
-        </label>
-        <select id="category" name="category" style="width: 100%; padding: 0.5rem;">
-          <option value="">-- Tất cả thể loại --</option>
-          {% for opt in categories %}
-            <option value="{{ opt.value }}" {% if opt.value == selected_category %}selected{% endif %}>
-              {{ opt.label }}
-            </option>
-          {% endfor %}
-        </select>
-      </div>
-
-      <div style="display: flex; gap: 0.5rem;">
-        <button type="submit" class="btn">🔍 Tìm</button>
-        <a href="{{ url_for('library.list_books_view') }}" class="btn">Xóa bộ lọc</a>
-      </div>
-    </div>
-  </form>
-</section>
-
 {% with messages = get_flashed_messages() %}
   {% if messages %}
     {% for msg in messages %}
@@ -69,81 +14,124 @@
   {% endif %}
 {% endwith %}
 
-<section>
-  {% if books and books|length > 0 %}
-    <p class="muted">Tìm thấy {{ books|length }} tài liệu.</p>
+<section class="library-page container">
+  <header class="library-heading">
+    <span class="library-eyebrow">STUDY QUEST · THƯ VIỆN</span>
+    <h1>Góc sách học tập</h1>
+    <p>Khám phá tài liệu theo môn học và tìm nhanh phần kiến thức mình cần.</p>
+  </header>
 
-    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1rem;">
+  <form class="library-toolbar" id="library-filter-form" method="get" action="{{ url_for('library.list_books_view') }}">
+    <label class="library-search" for="q">
+      <span>Tìm trong thư viện</span>
+      <input
+        type="search"
+        id="q"
+        name="q"
+        value="{{ keyword }}"
+        placeholder="Tên sách, tác giả hoặc nội dung..."
+      />
+    </label>
+
+    <label class="library-filter" for="subject">
+      <span>Môn học</span>
+      <select id="subject" name="subject">
+        <option value="">Tất cả môn học</option>
+        {% for opt in subjects %}
+          <option value="{{ opt.value }}" {% if opt.value == selected_subject %}selected{% endif %}>
+            {{ opt.label }}
+          </option>
+        {% endfor %}
+      </select>
+    </label>
+
+    <label class="library-filter" for="category">
+      <span>Thể loại</span>
+      <select id="category" name="category">
+        <option value="">Tất cả thể loại</option>
+        {% for opt in categories %}
+          <option value="{{ opt.value }}" {% if opt.value == selected_category %}selected{% endif %}>
+            {{ opt.label }}
+          </option>
+        {% endfor %}
+      </select>
+    </label>
+
+    <div class="library-actions">
+      <button type="submit" class="btn btn-primary">Tìm sách</button>
+      <a href="{{ url_for('library.list_books_view') }}" class="btn btn-ghost">Xóa lọc</a>
+    </div>
+  </form>
+
+  {% if books and books|length > 0 %}
+    <p class="library-count">Tìm thấy {{ books|length }} tài liệu</p>
+    <div class="library-grid">
       {% for book in books %}
         {% set book_id = book.id if book.id is defined else (book['id'] if book['id'] is defined else None) %}
         {% set title = book.title if book.title is defined else (book['title'] if book['title'] is defined else 'Không có tiêu đề') %}
         {% set author = book.author if book.author is defined else (book['author'] if book['author'] is defined else '') %}
         {% set subject = book.subject if book.subject is defined else (book['subject'] if book['subject'] is defined else '') %}
-        {% set topic = book.topic if book.topic is defined else (book['topic'] if book['topic'] is defined else '') %}
         {% set category = book.category if book.category is defined else (book['category'] if book['category'] is defined else '') %}
         {% set description = book.description if book.description is defined else (book['description'] if book['description'] is defined else '') %}
-        {% set rating = book.rating if book.rating is defined else (book['rating'] if book['rating'] is defined else None) %}
+        {% set cover = book.cover_url if book.cover_url is defined else (book['cover_url'] if book['cover_url'] is defined else '') %}
         {% set link = book.resource_url if book.resource_url is defined else book['resource_url'] if book is mapping and 'resource_url' in book else None %}
 
-        <article class="panel" style="display: flex; flex-direction: column; gap: 0.5rem;">
-          <h2 style="margin: 0; font-size: 1.15rem;">
+        <article class="library-card">
+          {% if cover %}
             {% if book_id %}
-              <a href="{{ url_for('library.book_detail', book_id=book_id) }}">{{ title }}</a>
+              <a class="library-cover-link" href="{{ url_for('library.book_detail', book_id=book_id) }}">
+                <img class="library-cover" src="{{ url_for('static', filename=cover) }}" alt="Ảnh minh họa {{ title }}" loading="lazy">
+              </a>
             {% else %}
-              {{ title }}
+              <img class="library-cover" src="{{ url_for('static', filename=cover) }}" alt="Ảnh minh họa {{ title }}" loading="lazy">
             {% endif %}
-          </h2>
-
-          {% if author %}
-            <p class="muted" style="margin: 0;">✍️ {{ author }}</p>
           {% endif %}
+          <div class="library-card-body">
+            <h2>
+              {% if book_id %}
+                <a href="{{ url_for('library.book_detail', book_id=book_id) }}">{{ title }}</a>
+              {% else %}
+                {{ title }}
+              {% endif %}
+            </h2>
 
-          <div style="display: flex; flex-wrap: wrap; gap: 0.35rem;">
-            {% if subject %}<span class="tag">{{ subject }}</span>{% endif %}
-            {% if topic %}<span class="tag">{{ topic }}</span>{% endif %}
-            {% if category %}<span class="tag">{{ category }}</span>{% endif %}
-          </div>
-
-          {% if description %}
-            <p style="margin: 0;">
-              {{ description[:160] }}{% if description|length > 160 %}...{% endif %}
-            </p>
-          {% endif %}
-
-          <p style="margin: 0;">
-            {% if rating is not none and rating != '' %}
-              ⭐ {{ rating }}
-            {% else %}
-              <span class="muted">Chưa có đánh giá</span>
+            {% if author %}
+              <p class="library-author">Tác giả: {{ author }}</p>
             {% endif %}
-          </p>
 
-          <div style="display: flex; gap: 0.5rem; margin-top: 0.25rem; flex-wrap: wrap;">
-            {% if book_id %}
-              <a class="btn" href="{{ url_for('library.book_detail', book_id=book_id) }}">Xem chi tiết</a>
+            <div class="library-tags">
+              {% if subject %}<span class="tag">{{ subject }}</span>{% endif %}
+              {% if category %}<span class="tag">{{ category }}</span>{% endif %}
+            </div>
+
+            {% if description %}
+              <p class="library-description">{{ description[:190] }}{% if description|length > 190 %}…{% endif %}</p>
             {% endif %}
-            {% if link %}
-              <a class="btn" href="{{ link }}" target="_blank" rel="noopener noreferrer">Mở tài liệu</a>
-            {% endif %}
+
+            <div class="library-card-actions">
+              {% if book_id %}
+                <a class="text-link" href="{{ url_for('library.book_detail', book_id=book_id) }}">Đọc mô tả <span aria-hidden="true">→</span></a>
+              {% endif %}
+              {% if link %}
+                <a class="text-link" href="{{ link }}" target="_blank" rel="noopener noreferrer">Mở tài liệu <span aria-hidden="true">↗</span></a>
+              {% endif %}
+            </div>
           </div>
         </article>
       {% endfor %}
     </div>
   {% else %}
-    <div class="panel">
-      <p style="margin: 0;">
-        😕 Không tìm thấy tài liệu phù hợp với
-        {% if keyword %}từ khóa "<strong>{{ keyword }}</strong>"{% endif %}
-        {% if selected_subject %} và môn "<strong>{{ selected_subject }}</strong>"{% endif %}
-        {% if selected_category %} và thể loại "<strong>{{ selected_category }}</strong>"{% endif %}.
-      </p>
-      <p class="muted" style="margin: 0.5rem 0 0;">
-        Hãy thử xóa bớt bộ lọc hoặc dùng từ khóa khác.
-        <a href="{{ url_for('library.list_books_view') }}">Xóa bộ lọc</a>
-      </p>
+    <div class="library-empty">
+      <span aria-hidden="true">📚</span>
+      <h2>Chưa tìm thấy sách phù hợp</h2>
+      <p>Thử đổi từ khóa hoặc bộ lọc để khám phá các tài liệu khác nhé.</p>
+      <a href="{{ url_for('library.list_books_view') }}" class="btn btn-ghost">Xóa bộ lọc</a>
     </div>
   {% endif %}
 </section>
+{% endblock %}
 
-<script src="{{ url_for('static', filename='js/library.js') }}"></script>
+{% block scripts %}
+  {{ super() }}
+  <script src="{{ url_for('static', filename='js/library.js') }}" defer></script>
 {% endblock %}

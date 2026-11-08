@@ -140,11 +140,21 @@ QUESTION_SEED = [
 ]
 
 BOOK_SEED = [
-    ('Chinh phục Toán 12', 'Nhiều tác giả', 'Toán', 'Học tập', 'Hàm số', 'Tài liệu ôn tập nền tảng Toán 12.', '', '', 4.5),
-    ('Sổ tay Hóa hữu cơ', 'Study Quest', 'Hóa', 'Học tập', 'Hữu cơ', 'Tóm tắt phản ứng và công thức Hóa hữu cơ.', '', '', 4.5),
-    ('Ngữ pháp tiếng Anh THPT', 'Study Quest', 'Anh', 'Học tập', 'Ngữ pháp', 'Các chủ điểm ngữ pháp thường gặp.', '', '', 4.5),
-    ('Vật lý 12 trọng tâm', 'Nhiều tác giả', 'Lý', 'Học tập', 'Dao động', 'Tổng hợp công thức và bài tập Vật lý.', '', '', 4.5),
-    ('Kỹ năng tự học hiệu quả', 'Study Quest', 'Kỹ năng', 'Lối sống', 'Tự học', 'Gợi ý xây dựng thói quen học tập.', '', '', 4.5),
+    ('Toán 12', 'Study Quest', 'Toán học', 'Tài liệu học tập', 'Hàm số và tích phân',
+     'Tài liệu hỗ trợ học tập môn Toán lớp 12, tổng hợp các kiến thức quan trọng về hàm số, nguyên hàm - tích phân, số phức, hình học và xác suất. Nội dung được trình bày ngắn gọn, dễ theo dõi, giúp học sinh củng cố nền tảng và rèn luyện tư duy giải bài tập.',
+     'images/library/toan.png', '', 4.5),
+    ('Vật Lý 12', 'Study Quest', 'Vật lý', 'Tài liệu học tập', 'Dao động và sóng',
+     'Tài liệu tổng hợp các kiến thức trọng tâm của Vật lý 12 như dao động, sóng, điện xoay chiều, lượng tử ánh sáng và vật lý hạt nhân. Nội dung giúp học sinh hệ thống hóa công thức, hiểu bản chất hiện tượng và hỗ trợ quá trình ôn tập.',
+     'images/library/vatly.png', '', 4.5),
+    ('Hóa Học 12', 'Study Quest', 'Hóa học', 'Tài liệu học tập', 'Hóa hữu cơ',
+     'Tài liệu học tập môn Hóa học 12 tập trung vào các chuyên đề quan trọng như hóa hữu cơ, hợp chất carbon, phản ứng hóa học và ứng dụng thực tế. Nội dung được thiết kế để giúp học sinh dễ dàng ôn tập và ghi nhớ kiến thức.',
+     'images/library/hoa.png', '', 4.5),
+    ('Ngữ Pháp Tiếng Anh THPT', 'Study Quest', 'Tiếng Anh', 'Tài liệu học tập', 'Ngữ pháp',
+     'Tài liệu tổng hợp các chủ điểm ngữ pháp tiếng Anh thường gặp trong chương trình THPT như các thì, câu bị động, câu điều kiện, mệnh đề quan hệ và cấu trúc câu. Giúp học sinh tra cứu nhanh và củng cố kiến thức ngữ pháp.',
+     'images/library/ta.png', '', 4.5),
+    ('Kỹ Năng Tự Học Hiệu Quả', 'Study Quest', 'Kỹ năng học tập', 'Tài liệu học tập', 'Tự học',
+     'Tài liệu hướng dẫn xây dựng phương pháp học tập hiệu quả thông qua việc lập kế hoạch, quản lý thời gian, ghi chú và phát triển thói quen tự học. Nội dung giúp học sinh nâng cao khả năng tổ chức việc học và duy trì động lực.',
+     'images/library/tuhoc.png', '', 4.5),
 ]
 
 
@@ -200,11 +210,29 @@ def _seed_questions(db):
 
 
 def _seed_books(db):
-    if db.execute('SELECT COUNT(*) FROM books').fetchone()[0] == 0:
-        db.executemany(
-            'INSERT INTO books(title,author,subject,category,topic,description,cover_url,resource_url,rating) VALUES(?,?,?,?,?,?,?,?,?)',
-            BOOK_SEED,
-        )
+    legacy_titles = {
+        'Toán 12': 'Chinh phục Toán 12',
+        'Vật Lý 12': 'Vật lý 12 trọng tâm',
+        'Hóa Học 12': 'Sổ tay Hóa hữu cơ',
+        'Ngữ Pháp Tiếng Anh THPT': 'Ngữ pháp tiếng Anh THPT',
+        'Kỹ Năng Tự Học Hiệu Quả': 'Kỹ năng tự học hiệu quả',
+    }
+    for book in BOOK_SEED:
+        title = book[0]
+        existing = db.execute(
+            'SELECT id FROM books WHERE title IN (?, ?) ORDER BY title = ? DESC LIMIT 1',
+            (title, legacy_titles[title], title),
+        ).fetchone()
+        if existing:
+            db.execute(
+                'UPDATE books SET title=?,author=?,subject=?,category=?,topic=?,description=?,cover_url=? WHERE id=?',
+                (*book[:7], existing['id']),
+            )
+        else:
+            db.execute(
+                'INSERT INTO books(title,author,subject,category,topic,description,cover_url,resource_url,rating) VALUES(?,?,?,?,?,?,?,?,?)',
+                book,
+            )
 
 
 if __name__ == '__main__':

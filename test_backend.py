@@ -44,8 +44,9 @@ def main():
             assert len(questions) > 0
             save_attempt(user_id, 'Toán', 'Hàm số', len(questions), 1, 5.0, 30)
 
-            books = list_books(subject='Toán')
+            books = list_books(subject='Toán học')
             assert len(books) > 0 and get_book(books[0]['id']) is not None
+            assert books[0]['cover_url'] == 'images/library/toan.png'
 
         print('ALL BACKEND TESTS PASSED')
         print('- SQLite schema: OK')
