@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" role="img" aria-labelledby="title">
+  <title id="title">Study Quest</title>
+  <rect x="2" y="2" width="44" height="44" rx="15" fill="#476b48"/>
+  <path d="M24 9.5 27.7 20l10.8 3.8-10.8 3.7L24 38l-3.7-10.5L9.5 23.8 20.3 20 24 9.5Z" fill="#d9ed91"/>
+  <circle cx="35.2" cy="12.8" r="2.2" fill="#fff"/>
+  <circle cx="12.7" cy="34.8" r="1.7" fill="#fff" opacity=".9"/>
+</svg>

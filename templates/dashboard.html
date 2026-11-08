@@ -1,0 +1,149 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Study Quest{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+<main class="dashboard-page">
+  <section class="panel dashboard-welcome">
+    <div>
+      <p class="eyebrow">Study Quest · Bảng hành trình</p>
+      <h1>Chào mừng trở lại! <span aria-hidden="true">🌿</span></h1>
+      <p class="muted">Mỗi bước học hôm nay sẽ đưa bạn gần hơn tới mục tiêu của mình.</p>
+    </div>
+    <div class="dashboard-quick-links" aria-label="Lối tắt">
+      <a class="btn btn-primary" href="/planner"><span aria-hidden="true">🗓️</span> Mở Planner</a>
+      <a class="btn dashboard-quiz-button" href="/quiz"><span aria-hidden="true">✏️</span> Làm Quiz</a>
+      <a class="btn btn-ghost" href="/profile"><span aria-hidden="true">🧙</span> Hồ sơ</a>
+    </div>
+  </section>
+
+  {% if current_user %}
+  <section class="panel dashboard-character-card" aria-label="Nhân vật của bạn">
+    <div class="dashboard-character-avatar">
+      {% if current_user['avatar'] == 'squirath' %}
+      <img src="{{ url_for('static', filename='images/profile/squirre_athlete.png') }}" alt="Sóc vận động viên" width="88" height="88">
+      {% elif current_user['avatar'] == 'capysnack' %}
+      <img src="{{ url_for('static', filename='images/profile/capybara_snack.png') }}" alt="Chuột lang ăn vặt" width="88" height="88">
+      {% elif current_user['avatar'] == 'catgls' %}
+      <img src="{{ url_for('static', filename='images/profile/cat_glasses.png') }}" alt="Mèo đeo kính" width="88" height="88">
+      {% elif current_user['avatar'] == 'corgivar' %}
+      <img src="{{ url_for('static', filename='images/profile/corgi_varsity.png') }}" alt="Corgi áo varsity" width="88" height="88">
+      {% elif current_user['avatar'] == 'dogshade' %}
+      <img src="{{ url_for('static', filename='images/profile/dog_sunglasses.png') }}" alt="Chó kính râm" width="88" height="88">
+      {% elif current_user['avatar'] == 'owlstudy' %}
+      <img src="{{ url_for('static', filename='images/profile/owl_student.png') }}" alt="Cú học sinh" width="88" height="88">
+      {% elif current_user['avatar'] == 'rabbook' %}
+      <img src="{{ url_for('static', filename='images/profile/rabbit_book.png') }}" alt="Thỏ ôm sách" width="88" height="88">
+      {% else %}
+      <img src="{{ url_for('static', filename='images/profile/rabbit_book.png') }}" alt="Thỏ ôm sách" width="88" height="88">
+      {% endif %}
+    </div>
+    <div class="dashboard-character-info">
+      <p class="eyebrow">NHÂN VẬT CỦA BẠN</p>
+      <h2>{{ current_user['character_name'] }}</h2>
+      <span class="dashboard-character-level">✦ Level {{ current_user['level'] }}</span>
+      <p class="dashboard-character-encouragement">Mỗi bước nhỏ hôm nay đều đưa bạn tiến gần hơn tới mục tiêu. Cứ tiếp tục nhé!</p>
+    </div>
+    <div class="dashboard-character-xp">
+      <div><strong>{{ current_user['exp'] % 100 }}</strong><span> / 100 EXP</span></div>
+      <progress max="100" value="{{ current_user['exp'] % 100 }}" aria-label="EXP trong level hiện tại"></progress>
+      <span>Tiến trình level</span>
+    </div>
+  </section>
+  {% endif %}
+
+  <section class="dashboard-stats" aria-label="Thống kê học tập">
+    <article class="panel dashboard-stat-card dashboard-stat-done">
+      <span class="dashboard-stat-icon" aria-hidden="true">✅</span>
+      <div>
+        <p>Task đã hoàn thành</p>
+        <strong>{{ stats.done }}</strong>
+        <span class="dashboard-stat-caption">Từng bước tiến bộ</span>
+      </div>
+    </article>
+    <article class="panel dashboard-stat-card dashboard-stat-total">
+      <span class="dashboard-stat-icon" aria-hidden="true">📋</span>
+      <div>
+        <p>Tổng số task</p>
+        <strong>{{ stats.total }}</strong>
+        <span class="dashboard-stat-caption">Trong kế hoạch học</span>
+      </div>
+    </article>
+    <article class="panel dashboard-stat-card dashboard-stat-quiz">
+      <span class="dashboard-stat-icon" aria-hidden="true">🧠</span>
+      <div>
+        <p>Lượt Quiz</p>
+        <strong>{{ stats.quiz }}</strong>
+        <span class="dashboard-stat-caption">Lần luyện tập chủ động</span>
+      </div>
+    </article>
+  </section>
+
+  <section class="panel dashboard-section">
+    <div class="dashboard-section-heading">
+      <div>
+        <p class="eyebrow">CHUẨN BỊ TỪNG BƯỚC</p>
+        <h2><span aria-hidden="true">🎯</span> Kỳ thi sắp tới</h2>
+      </div>
+      <a class="dashboard-section-link" href="/planner">Mở Planner <span aria-hidden="true">→</span></a>
+    </div>
+    {% if exams %}
+      <div class="dashboard-exam-grid">
+        {% for exam in exams %}
+          <article class="dashboard-exam-card">
+            <span class="dashboard-card-icon" aria-hidden="true">📘</span>
+            <div class="dashboard-card-content">
+              <h3><span class="dashboard-subject-badge">{{ exam.subject }}</span></h3>
+              <p><span aria-hidden="true">📅</span> Ngày thi: {{ exam.exam_date }}</p>
+              <span class="dashboard-target"><span aria-hidden="true">✦</span> Mục tiêu {{ exam.target_score }}/10</span>
+            </div>
+          </article>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="dashboard-empty-state">
+        <span class="dashboard-empty-icon" aria-hidden="true">🪴</span>
+        <div>
+          <h3>Mục tiêu đầu tiên đang chờ bạn</h3>
+          <p>Thêm kỳ thi vào Planner để biến mục tiêu lớn thành những bước học vừa sức.</p>
+        </div>
+        <a class="btn btn-primary" href="/planner">Tạo kế hoạch</a>
+      </div>
+    {% endif %}
+  </section>
+
+  <section class="panel dashboard-section">
+    <div class="dashboard-section-heading">
+      <div>
+        <p class="eyebrow">TIẾN BỘ MỖI NGÀY</p>
+        <h2><span aria-hidden="true">📚</span> Kế hoạch học gần đây</h2>
+      </div>
+      <a class="dashboard-section-link" href="/planner">Xem kế hoạch <span aria-hidden="true">→</span></a>
+    </div>
+    {% if plans %}
+      <div class="dashboard-plan-list">
+        {% for plan in plans %}
+          <article class="dashboard-plan-card{% if plan.completed %} is-complete{% endif %}">
+            <span class="dashboard-plan-icon" aria-hidden="true">{% if plan.completed %}✓{% else %}◷{% endif %}</span>
+            <div class="dashboard-plan-content">
+              <h3>{{ plan.title }}</h3>
+              <p><span class="dashboard-subject-badge">{{ plan.subject }}</span> <span aria-hidden="true">·</span> {{ plan.study_date }} <span aria-hidden="true">·</span> {{ plan.duration_minutes }} phút</p>
+            </div>
+            <span class="dashboard-plan-status">{% if plan.completed %}Đã hoàn thành{% else %}Chưa hoàn thành{% endif %}</span>
+          </article>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="dashboard-empty-state dashboard-empty-plan">
+        <span class="dashboard-empty-icon" aria-hidden="true">🌱</span>
+        <div>
+          <h3>Chưa có nhiệm vụ học tập</h3>
+          <p>Bắt đầu với một kế hoạch nhỏ — bạn làm được mà!</p>
+        </div>
+        <a class="btn btn-primary" href="/planner">Mở Planner</a>
+      </div>
+    {% endif %}
+  </section>
+</main>
+{% endblock %}

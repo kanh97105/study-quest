@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% block content %}
+<section class="panel">
+  <p class="eyebrow">Study Quest · Đang làm Quiz</p>
+  <h1>{{ subject }}{% if topic %} · {{ topic }}{% endif %}</h1>
+  <p class="muted"><span id="answered-count">0</span>/{{ questions|length }} câu đã chọn</p>
+
+  <form method="post" action="{{ url_for('quiz.submit') }}" id="quiz-play-form">
+    <input type="hidden" name="submit_token" value="{{ submit_token }}">
+    {% for q in questions %}
+    <fieldset class="panel quiz-question">
+      <legend><strong>Câu {{ loop.index }}.</strong> {{ q.question_text }}</legend>
+      {% for letter, text in [('A', q.option_a), ('B', q.option_b), ('C', q.option_c), ('D', q.option_d)] %}
+      <label class="quiz-option">
+        <input type="radio" name="answer_{{ q.id }}" value="{{ letter }}">
+        <span><strong>{{ letter }}.</strong> {{ text }}</span>
+      </label>
+      {% endfor %}
+    </fieldset>
+    {% endfor %}
+    <button class="btn" type="submit">Nộp bài</button>
+    <a class="btn ghost" href="{{ url_for('quiz.cancel') }}">Thoát lượt Quiz</a>
+  </form>
+</section>
+<script src="{{ url_for('static', filename='js/quiz.js') }}" defer></script>
+{% endblock %}

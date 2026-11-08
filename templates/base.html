@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f8f7f2">
+  <meta name="description" content="Study Quest — biến mục tiêu học tập thành hành trình của riêng bạn.">
+  <title>{% block title %}Study Quest{% endblock %}</title>
+  <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='images/study-quest-mark.svg') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/rpg.css') }}">
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Bỏ qua điều hướng</a>
+  <div class="rpg-decoration-layer" aria-hidden="true">
+    <span class="rpg-pixel-decor rpg-pixel-star"></span>
+    <span class="rpg-pixel-decor rpg-pixel-leaf"></span>
+    <span class="rpg-pixel-decor rpg-pixel-star"></span>
+    <span class="rpg-pixel-decor rpg-pixel-leaf"></span>
+  </div>
+  <header class="site-header">
+    <nav class="navbar container" aria-label="Điều hướng chính">
+      <a class="brand" href="/" aria-label="Study Quest — Trang chủ">
+        <img class="brand-mark" src="{{ url_for('static', filename='images/study-quest-mark.svg') }}" alt="" width="40" height="40">
+        <span class="brand-name">study<span>quest</span><small>Học tốt, chơi vui</small></span>
+      </a>
+
+      <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="primary-navigation" aria-label="Mở menu">
+        <span></span><span></span><span></span>
+      </button>
+
+      <div class="nav-panel" id="primary-navigation">
+        <div class="nav-links">
+          <a class="nav-link{% if request.path == '/' %} is-active{% endif %}" href="/">Trang chủ</a>
+          <a class="nav-link{% if request.path.startswith('/dashboard') %} is-active{% endif %}" href="/dashboard">Dashboard</a>
+          <a class="nav-link{% if request.path.startswith('/planner') %} is-active{% endif %}" href="/planner">Planner</a>
+          <a class="nav-link{% if request.path.startswith('/quiz') %} is-active{% endif %}" href="/quiz">Quiz</a>
+          <a class="nav-link{% if request.path.startswith('/library') %} is-active{% endif %}" href="/library">Library</a>
+          <a class="nav-link{% if request.path.startswith('/profile') %} is-active{% endif %}" href="/profile">Profile</a>
+          {% if current_user %}
+          <a class="nav-link{% if request.path.startswith('/pomodoro') %} is-active{% endif %}" href="{{ url_for('pomodoro') }}">Pomodoro</a>
+          {% endif %}
+        </div>
+        <div class="nav-actions">
+          {% if current_user %}
+          <a class="rpg-xp-mini" href="/profile" aria-label="Level {{ current_user['level'] }}, {{ current_user['exp'] % 100 }} trên 100 EXP trong level">
+            <span class="rpg-xp-mini-level">✦ Level {{ current_user['level'] }}</span>
+            <span class="rpg-xp-mini-progress">
+              <span>{{ current_user['exp'] % 100 }}/100 EXP</span>
+              <progress max="100" value="{{ current_user['exp'] % 100 }}"></progress>
+            </span>
+          </a>
+          <a class="btn btn-ghost btn-small" href="{{ url_for('change_password') }}">Đổi mật khẩu</a>
+          <a class="btn btn-ghost btn-small rpg-logout" href="/logout">Đăng xuất</a>
+          {% else %}
+          <a class="btn btn-ghost btn-small" href="/login">Đăng nhập</a>
+          <a class="btn btn-primary btn-small" href="/register">Bắt đầu</a>
+          {% endif %}
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      <div class="flash-stack container" aria-live="polite" aria-atomic="false">
+        {% for category, message in messages %}
+          <div class="flash flash-{{ category|lower|replace(' ', '-') }}" role="status">
+            <span class="flash-message">{{ message }}</span>
+            <button class="flash-close" type="button" aria-label="Đóng thông báo">&times;</button>
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+  {% endwith %}
+
+  <main id="main-content">
+    {% block content %}{% endblock %}
+  </main>
+
+  {% block scripts %}
+    <script src="{{ url_for('static', filename='js/app.js') }}" defer></script>
+  {% endblock %}
+</body>
+</html>

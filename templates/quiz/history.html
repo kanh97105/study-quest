@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% block content %}
+<section class="panel">
+  <p class="eyebrow">Study Quest · Theo dõi tiến độ</p>
+  <h1>Lịch sử Quiz của em</h1>
+  {% if attempts %}
+  <div class="stats">
+    {% for attempt in attempts %}
+    <article class="panel">
+      <h2>{{ attempt['subject'] }}{% if attempt['topic'] %} · {{ attempt['topic'] }}{% endif %}</h2>
+      <p>{{ attempt['correct_answers'] }}/{{ attempt['total_questions'] }} câu đúng · {{ '%.1f'|format(attempt['score']) }}/10</p>
+      <p class="muted">+{{ attempt['exp_earned'] }} EXP · {{ attempt['created_at'] }}</p>
+    </article>
+    {% endfor %}
+  </div>
+  {% else %}
+  <p class="muted">Chưa có lượt Quiz nào. Bắt đầu làm một bài để xem tiến độ nhé.</p>
+  {% endif %}
+  <a class="btn" href="{{ url_for('quiz.index') }}">Quay lại Quiz</a>
+</section>
+{% endblock %}
