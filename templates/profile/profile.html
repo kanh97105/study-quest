@@ -1,0 +1,147 @@
+{% extends 'base.html' %}
+{% block content %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/profile.css') }}">
+<div class="profile-page">
+  <section class="panel profile-hero" aria-labelledby="profile-title">
+    <div class="profile-hero-main">
+      <div class="profile-avatar-frame">
+        <img id="avatar-preview" src="{{ url_for('static', filename='images/profile/' ~ selected_avatar.filename) }}" alt="{{ selected_avatar.label }}" width="144" height="144">
+      </div>
+      <div class="profile-identity">
+        <p class="eyebrow">Study Quest · Hồ sơ nhân vật</p>
+        <h1 id="profile-title">{{ profile['character_name'] }}</h1>
+        <p class="profile-avatar-name"><span id="avatar-preview-label">{{ selected_avatar.label }}</span> · hành trình học tập của bạn</p>
+        <span class="profile-level-badge"><span aria-hidden="true">✦</span> Level {{ profile['level'] }}</span>
+      </div>
+    </div>
+    <div class="profile-xp-card">
+      <div class="profile-xp-heading">
+        <div>
+          <span class="profile-stat-label">Tiến trình cấp độ</span>
+          <strong>{{ exp_in_level }} <span>/ 100 EXP</span></strong>
+        </div>
+        <span class="profile-xp-next">Còn {{ exp_to_next }} EXP lên cấp</span>
+      </div>
+      <progress max="100" value="{{ progress_percent }}" aria-label="Tiến trình EXP"></progress>
+      <div class="profile-xp-footer">
+        <span>Tổng EXP: <strong>{{ profile['exp'] }}</strong></span>
+        <span class="profile-reward"><span aria-hidden="true">✦</span> {{ profile['reward_points'] }} điểm thưởng</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="profile-rpg-tracker" aria-label="Theo dõi streak và freeze">
+    <article class="panel profile-tracker-card profile-streak-card">
+      <span class="profile-tracker-icon" aria-hidden="true">🔥</span>
+      <div class="profile-tracker-copy">
+        <span class="profile-tracker-label">Streak</span>
+        <strong class="profile-tracker-value">— <span>ngày liên tục</span></strong>
+      </div>
+      <span class="profile-preview-pill">Bản xem trước — chưa kết nối dữ liệu</span>
+    </article>
+    <article class="panel profile-tracker-card profile-freeze-card">
+      <span class="profile-tracker-icon" aria-hidden="true">🧊</span>
+      <div class="profile-tracker-copy">
+        <span class="profile-tracker-label">Freeze</span>
+        <strong class="profile-tracker-value">— <span>lượt còn lại</span></strong>
+      </div>
+      <button class="btn btn-ghost profile-calendar-toggle" id="freeze-calendar-toggle" type="button" aria-expanded="false" aria-controls="freeze-calendar">
+        <span aria-hidden="true">🧊</span> Xem lịch
+      </button>
+    </article>
+
+    <div class="panel profile-freeze-calendar" id="freeze-calendar" hidden>
+      <div class="profile-freeze-calendar-heading">
+        <div>
+          <p class="eyebrow">LỊCH MINH HỌA</p>
+          <h2>Ngày lỡ streak</h2>
+        </div>
+        <span class="profile-preview-pill">Ngày mẫu — không phải dữ liệu thật</span>
+      </div>
+      <p class="profile-calendar-help">Chọn một ô ngày minh họa để xem hộp xác nhận. Thao tác này chưa sử dụng freeze.</p>
+      <div class="profile-calendar-grid" role="group" aria-label="Các ngày minh họa">
+        {% for day in range(1, 15) %}
+        <button class="profile-calendar-day" type="button" data-preview-day="{{ day }}" aria-label="Ngày minh họa {{ day }}">{{ day }}</button>
+        {% endfor %}
+      </div>
+    </div>
+  </section>
+
+  <dialog class="profile-freeze-dialog" id="freeze-confirm-dialog" aria-labelledby="freeze-dialog-title">
+    <div class="profile-freeze-dialog-content">
+      <span class="profile-dialog-icon" aria-hidden="true">🧊</span>
+      <p class="eyebrow">FREEZE · BẢN XEM TRƯỚC</p>
+      <h2 id="freeze-dialog-title">Bạn muốn sử dụng freeze cho ngày này không?</h2>
+      <p class="profile-freeze-selected-day" id="freeze-selected-day"></p>
+      <p class="profile-freeze-notice" id="freeze-preview-notice" role="status" hidden></p>
+      <div class="profile-freeze-dialog-actions">
+        <button class="btn btn-ghost" id="freeze-cancel" type="button">Hủy</button>
+        <button class="btn btn-primary" id="freeze-confirm" type="button">Xác nhận</button>
+        <button class="btn btn-ghost" id="freeze-close" type="button" hidden>Đóng</button>
+      </div>
+    </div>
+  </dialog>
+
+  <section class="panel profile-editor" aria-labelledby="profile-editor-title">
+    <div class="profile-section-heading">
+      <div>
+        <p class="eyebrow">TÙY CHỈNH NHÂN VẬT</p>
+        <h2 id="profile-editor-title">Hồ sơ của bạn</h2>
+      </div>
+      <span class="profile-section-note">Chọn diện mạo đồng hành cùng bạn</span>
+    </div>
+
+    <form method="post" action="{{ url_for('profile.index') }}" id="profile-form">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+      <label class="profile-name-label" for="character_name">Tên nhân vật <span>(tối đa 30 ký tự)</span></label>
+      <input class="profile-name-input" id="character_name" name="character_name" maxlength="30" value="{{ profile['character_name'] }}" required>
+
+      <fieldset class="profile-avatar-fieldset">
+        <legend>Chọn avatar</legend>
+        <div class="profile-avatar-grid">
+          {% for avatar in avatars %}
+          <label class="profile-avatar-option{% if avatar.code == selected_avatar.code %} is-selected{% endif %}">
+            <input type="radio" name="avatar" value="{{ avatar.code }}" data-image="{{ url_for('static', filename='images/profile/' ~ avatar.filename) }}" data-label="{{ avatar.label }}" {% if avatar.code == selected_avatar.code %}checked{% endif %} required>
+            <img src="{{ url_for('static', filename='images/profile/' ~ avatar.filename) }}" alt="{{ avatar.label }}" width="88" height="88">
+            <span class="profile-avatar-label">{{ avatar.label }}</span>
+            <span class="profile-avatar-status" data-avatar-selected>{% if avatar.code == selected_avatar.code %}Đang chọn{% else %}Chọn avatar{% endif %}</span>
+          </label>
+          {% endfor %}
+        </div>
+      </fieldset>
+
+      <div class="profile-form-actions">
+        <button class="btn btn-primary profile-save-button" type="submit">Lưu hồ sơ</button>
+        <a class="btn btn-ghost" href="{{ url_for('profile.achievements') }}">Xem thành tích</a>
+      </div>
+    </form>
+  </section>
+
+  <section class="panel profile-activity" aria-labelledby="profile-activity-title">
+    <div class="profile-section-heading">
+      <div>
+        <p class="eyebrow">MỖI BƯỚC ĐỀU ĐÁNG GHI NHẬN</p>
+        <h2 id="profile-activity-title">Hoạt động gần đây</h2>
+      </div>
+      <span class="profile-reward profile-activity-mark" aria-hidden="true">✦</span>
+    </div>
+    {% if activities %}
+    <div class="profile-activity-grid">
+      {% for activity in activities %}
+      <article class="profile-activity-card">
+        <span class="tag">{{ activity['activity_type'] }}</span>
+        <p>{{ activity['description'] }}</p>
+        <div class="profile-activity-meta">
+          <span>{{ activity['occurred_at'] }}</span>
+          {% if activity['exp_earned'] %}<strong>+{{ activity['exp_earned'] }} EXP</strong>{% endif %}
+        </div>
+      </article>
+      {% endfor %}
+    </div>
+    {% else %}
+    <p class="profile-empty-state">Chưa có hoạt động để hiển thị. Hoàn thành một nhiệm vụ để bắt đầu hành trình nhé!</p>
+    {% endif %}
+  </section>
+</div>
+<script src="{{ url_for('static', filename='js/rpg.js') }}" defer></script>
+{% endblock %}

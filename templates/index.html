@@ -1,0 +1,175 @@
+{% extends "base.html" %}
+
+{% block title %}Study Quest — Học tập theo cách của bạn{% endblock %}
+
+{% block content %}
+<section class="hero-section">
+  <div class="container hero">
+    <div class="hero-copy">
+      <span class="eyebrow"><span class="eyebrow-dot"></span> Hành trình ôn thi THPT của bạn</span>
+      <h1>Chinh phục mục tiêu.<br><span class="text-highlight">Lên level mỗi ngày.</span></h1>
+      <p class="hero-description">Một chút kế hoạch, một chút tập trung — và thật nhiều tiến bộ. Study Quest giúp bạn học chủ động, theo dõi hành trình và biến mỗi phiên ôn tập thành một chiến thắng.</p>
+      <div class="hero-actions">
+        <a class="btn btn-primary btn-large" href="/register">Bắt đầu hành trình <span aria-hidden="true">↗</span></a>
+        <a class="btn btn-ghost btn-large" href="/login">Mình đã có tài khoản</a>
+      </div>
+      <div class="hero-note"><span class="note-icon" aria-hidden="true">✦</span> Tiến bộ theo nhịp của bạn — không cần hoàn hảo ngay hôm nay.</div>
+    </div>
+
+    <div class="hero-art" aria-label="Minh họa bảng tiến độ học tập Study Quest" role="img">
+      <div class="art-orbit orbit-one"></div><div class="art-orbit orbit-two"></div>
+      <div class="spark spark-one">✦</div><div class="spark spark-two">✧</div><div class="spark spark-three">✦</div>
+      <div class="study-card">
+        <div class="study-card-top"><div><span class="mini-label">HÔM NAY</span><h2>Chào buổi học!</h2></div><span class="sun-badge" aria-hidden="true">☼</span></div>
+        <div class="streak-row"><div class="streak-icon" aria-hidden="true">⚡</div><div><strong>7 ngày liên tiếp</strong><span>Chuỗi học tập của bạn</span></div><span class="streak-count">+1</span></div>
+        <div class="daily-progress"><div class="progress-heading"><span>Mục tiêu hôm nay</span><strong>2 / 3 phiên</strong></div><div class="progress progress-track"><span style="width: 67%"></span></div></div>
+        <div class="mini-task"><span class="task-check" aria-hidden="true">✓</span><span>Ôn tập hàm số</span><span class="task-time">25 phút</span></div>
+        <div class="mini-task"><span class="task-check" aria-hidden="true">✓</span><span>Quiz Hóa học</span><span class="task-time">10 câu</span></div>
+        <div class="mini-task is-next"><span class="task-pending" aria-hidden="true"></span><span>Đọc chương tiếp theo</span><span class="task-time">Sắp tới</span></div>
+      </div>
+      <div class="floating-pill pill-xp"><span aria-hidden="true">✦</span> +120 XP</div>
+      <div class="floating-pill pill-focus"><span class="focus-dot"></span> Đang tập trung</div>
+    </div>
+  </div>
+  <div class="hero-bottom container"><span>HỌC CÓ KẾ HOẠCH</span><span class="hero-bottom-line"></span><span>TIẾN BỘ CÓ THEO DÕI</span><span class="hero-bottom-line"></span><span>THÀNH TÍCH CỦA RIÊNG BẠN</span></div>
+</section>
+
+<section class="features-section section-pad" id="features">
+  <div class="container">
+    <div class="section-heading">
+      <span class="eyebrow">BỘ CÔNG CỤ CỦA BẠN</span>
+      <h2>Mọi thứ cần có để <span class="text-highlight">bứt phá.</span></h2>
+      <p>Từ việc lên lịch đến phút giải lao — mỗi tính năng đều giúp bạn học nhẹ nhàng và hiệu quả hơn.</p>
+    </div>
+    <div class="feature-grid grid">
+      <article class="feature-card card feature-planner"><div class="feature-icon icon-lilac" aria-hidden="true">▦</div><span class="feature-kicker">LÊN KẾ HOẠCH</span><h3>Planner</h3><p>Chia mục tiêu lớn thành những việc nhỏ, rõ ràng. Biết hôm nay cần làm gì và yên tâm theo sát tiến độ.</p><a class="text-link" href="/planner">Khám phá Planner <span aria-hidden="true">→</span></a></article>
+      <article class="feature-card card feature-quiz"><div class="feature-icon icon-peach" aria-hidden="true">？</div><span class="feature-kicker">LUYỆN TẬP CHỦ ĐỘNG</span><h3>Quiz</h3><p>Ôn kiến thức qua câu hỏi ngắn, nhận phản hồi nhanh và nhìn thấy mình đã tiến xa đến đâu.</p><a class="text-link" href="/quiz">Thử Quiz <span aria-hidden="true">→</span></a></article>
+      <article class="feature-card card feature-library"><div class="feature-icon icon-mint" aria-hidden="true">▤</div><span class="feature-kicker">GÓC TÀI LIỆU</span><h3>Library</h3><p>Lưu tài liệu, ghi chú và nguồn học yêu thích vào một nơi gọn gàng, dễ tìm lại khi cần.</p><a class="text-link" href="/library">Mở Library <span aria-hidden="true">→</span></a></article>
+      <article class="feature-card card feature-rpg"><div class="feature-icon icon-yellow" aria-hidden="true">✦</div><span class="feature-kicker">HỌC NHƯ MỘT CUỘC PHIÊU LƯU</span><h3>Study RPG</h3><p>Hoàn thành nhiệm vụ, tích lũy XP và mở khóa thành tích — để mỗi bước nhỏ đều đáng ghi nhận.</p><a class="text-link" href="/dashboard">Xem hành trình <span aria-hidden="true">→</span></a></article>
+      <article class="feature-card card feature-pomodoro"><div class="feature-icon icon-blue" aria-hidden="true">◷</div><span class="feature-kicker">TẬP TRUNG & NGHỈ NGƠI</span><h3>Pomodoro</h3><p>Tập trung theo từng phiên vừa sức, xen kẽ nghỉ ngắn để giữ năng lượng và tránh quá tải.</p><a class="text-link" href="{{ url_for('pomodoro') }}">Bắt đầu một phiên <span aria-hidden="true">→</span></a></article>
+    </div>
+  </div>
+</section>
+
+<section class="welcome-media-section section-pad" aria-labelledby="welcome-media-title">
+  <div class="container">
+    <div class="section-heading">
+      <span class="eyebrow">LỜI NHẮN TỪ NHÓM STUDY QUEST</span>
+      <h2 id="welcome-media-title">Cùng bắt đầu hành trình nhé!</h2>
+      <p>Một lời nhắn được gửi đến bạn trên hành trình học tập.</p>
+    </div>
+    <div class="author-letter-card">
+      <div class="letter-invitation">
+        <span class="letter-envelope" aria-hidden="true">✉</span>
+        <p>Một lời nhắn từ nhóm Study Quest</p>
+        <button class="btn btn-primary" id="letter-toggle" type="button" aria-expanded="false" aria-controls="letter-content">Mở thư</button>
+      </div>
+      <div class="author-letter-reveal" id="letter-content" aria-hidden="true">
+        <div class="author-letter-reveal-inner">
+          <figure class="author-letter">
+            <img src="{{ url_for('static', filename='images/tamthucactacgia.png') }}" alt="Thư viết tay của nhóm tác giả Study Quest gửi lời động viên đến các bạn học sinh, có chữ ký của nhóm">
+            <figcaption>Tâm tình của nhóm tác giả Study Quest</figcaption>
+          </figure>
+        </div>
+      </div>
+    </div>
+    <video class="welcome-video" controls preload="metadata" playsinline aria-label="Video chào mừng Study Quest">
+      <source src="{{ url_for('static', filename='videos/videochaomungStudyQuest.mp4') }}" type="video/mp4">
+      Trình duyệt của bạn không hỗ trợ phát video.
+    </video>
+  </div>
+</section>
+
+<style>
+  .author-letter-card{max-width:760px;margin:0 auto 48px;padding:24px;border:1px solid var(--line);border-radius:var(--radius);background:var(--white);box-shadow:0 8px 24px rgba(37,49,32,.04)}
+  .letter-invitation{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:14px;text-align:center}
+  .letter-invitation p{margin:0;color:var(--green-dark);font-weight:700}
+  .letter-envelope{display:grid;place-items:center;width:44px;height:44px;border-radius:14px;background:#f8f1d9;color:#9c7b32;font-size:23px}
+  .author-letter-reveal{display:grid;grid-template-rows:0fr;opacity:0;transform:translateY(-8px);transition:grid-template-rows .4s ease,opacity .3s ease,transform .3s ease}
+  .author-letter-reveal.is-open{grid-template-rows:1fr;opacity:1;transform:translateY(0)}
+  .author-letter-reveal-inner{min-height:0;overflow:hidden}
+  .author-letter-reveal .author-letter{margin:20px auto 0}
+  @media(max-width:600px){.author-letter-card{padding:18px}.letter-invitation{flex-direction:column}}
+  @media(prefers-reduced-motion:reduce){.author-letter-reveal{transition:none;transform:none}}
+</style>
+<script>
+  (() => {
+    const button = document.getElementById('letter-toggle');
+    const content = document.getElementById('letter-content');
+    if (!button || !content) return;
+
+    button.addEventListener('click', () => {
+      const isOpening = button.getAttribute('aria-expanded') !== 'true';
+      button.setAttribute('aria-expanded', String(isOpening));
+      button.textContent = isOpening ? 'Đóng thư' : 'Mở thư';
+      content.classList.toggle('is-open', isOpening);
+      content.setAttribute('aria-hidden', String(!isOpening));
+    });
+  })();
+</script>
+
+<section class="closing-section">
+  <div class="container closing-panel panel">
+    <div><span class="eyebrow">BƯỚC ĐẦU TIÊN CŨNG LÀ TIẾN BỘ</span><h2>Sẵn sàng viết tiếp<br>câu chuyện của bạn?</h2><p>Bắt đầu bằng một mục tiêu nhỏ cho hôm nay.</p></div>
+    <a class="btn btn-primary btn-large" href="/register">Tạo tài khoản miễn phí <span aria-hidden="true">↗</span></a>
+    <span class="closing-star" aria-hidden="true">✳</span>
+  </div>
+</section>
+<section class="about-project-section section-pad" aria-labelledby="about-project-title">
+  <div class="container">
+    <div class="section-heading">
+      <span class="eyebrow">VỀ STUDY QUEST</span>
+      <h2 id="about-project-title">Về dự án</h2>
+      <p class="about-project-subtitle">Study Quest – Cùng nhau viết nên hành trình học tập</p>
+    </div>
+    <div class="about-project-copy">
+      <p>Study Quest là một dự án nhỏ được xây dựng với mong muốn tạo ra một không gian học tập thân thiện, nơi việc học không chỉ là những bài kiểm tra và áp lực, mà còn là một hành trình khám phá đầy thú vị.</p>
+      <p>Chúng mình hy vọng website có thể giúp các bạn học sinh sắp xếp kế hoạch học tập, lưu giữ kiến thức, luyện tập hiệu quả và tìm thêm động lực để cố gắng mỗi ngày.</p>
+      <p>Mỗi mục tiêu hoàn thành, mỗi kiến thức mới đạt được đều là một bước tiến nhỏ trên hành trình lớn. Cảm ơn bạn đã ghé thăm và đồng hành cùng Study Quest.</p>
+    </div>
+  </div>
+</section>
+<section class="contact-section section-pad" aria-labelledby="contact-title">
+  <div class="container">
+    <div class="section-heading">
+      <span class="eyebrow">VỀ DỰ ÁN</span>
+      <h2 id="contact-title">Liên hệ</h2>
+    </div>
+    <div class="contact-card">
+      <strong>Study Quest – Smart Exam Planner</strong>
+      <p>Contact: 12A1 Hoàng Diệu</p>
+      <p>Dự án Tin học lớp 12A1 Hoàng Diệu</p>
+    </div>
+  </div>
+</section>
+<section class="team-section section-pad" aria-labelledby="team-title">
+  <div class="container">
+    <div class="section-heading">
+      <span class="eyebrow">NHỮNG NGƯỜI ĐỨNG SAU STUDY QUEST</span>
+      <h2 id="team-title">Đội ngũ thực hiện</h2>
+      <p>Các Admin đóng góp gồm:</p>
+    </div>
+    <ul class="team-list">
+      <li class="team-member"><strong>Admin 1 – Ngô Kim Ngân</strong><span>Project Leader + System Design</span></li>
+      <li class="team-member"><strong>Admin 2 – Đặng Huỳnh Thảo Nhi</strong><span>Backend + Database</span></li>
+      <li class="team-member"><strong>Admin 3 – Nguyễn Trần Gia Mỹ</strong><span>Smart Exam Planner</span></li>
+      <li class="team-member"><strong>Admin 4 – Quách Hồ Cát Tiên</strong><span>Quiz System</span></li>
+      <li class="team-member"><strong>Admin 5 – Khưu Bảo Châu</strong><span>Smart Learning Hub + Library</span></li>
+      <li class="team-member"><strong>Admin 6 – Huỳnh Nhật Huy</strong><span>Frontend + UI/UX</span></li>
+      <li class="team-member"><strong>Admin 7 – Nguyễn Thành Hậu</strong><span>RPG + Security + Testing</span></li>
+    </ul>
+  </div>
+</section>
+<footer class="footer">
+  <div class="container footer-inner">
+    <a class="footer-brand" href="/">
+      <img src="{{ url_for('static', filename='images/study-quest-mark.svg') }}" alt="" width="28" height="28">
+      <span>Study Quest</span>
+    </a>
+    <p>Học tốt, chơi vui. Mỗi ngày tiến thêm một chút.</p>
+    <div class="footer-links"><a href="/planner">Planner</a><a href="/quiz">Quiz</a><a href="/library">Library</a><a href="/login">Đăng nhập</a></div>
+  </div>
+</footer>
+{% endblock %}
+
+{% block scripts %}{{ super() }}{% endblock %}

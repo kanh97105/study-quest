@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+{% block content %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/profile.css') }}">
+<main class="achievement-page">
+  <section class="panel achievement-heading">
+    <p class="eyebrow">Study Quest · Thành tích</p>
+    <h1>Thành tích của {{ profile['character_name'] }}</h1>
+    <p class="muted">Mỗi biểu tượng mặt trời đánh dấu một thành tựu đã được ghi nhận.</p>
+  </section>
+
+  {% if achievements %}
+  <section class="achievement-grid" aria-label="Thành tựu đã mở khóa">
+    {% for achievement in achievements %}
+    <article class="panel achievement-card is-unlocked">
+      <div class="achievement-sun-wrap" aria-hidden="true">
+        <span class="achievement-pixel-sun"></span>
+      </div>
+      <div class="achievement-copy">
+        <span class="achievement-state">Đã mở khóa</span>
+        <h2>{{ achievement['title'] }}</h2>
+        <p>{{ achievement['description'] }}</p>
+        <p class="muted achievement-date">Mở khóa: {{ achievement['unlocked_at'] }}</p>
+      </div>
+    </article>
+    {% endfor %}
+  </section>
+  {% else %}
+  <section class="panel achievement-empty">
+    <span class="achievement-empty-icon" aria-hidden="true">🌱</span>
+    <h2>Hành trình thành tựu bắt đầu từ đây</h2>
+    <p class="muted">Chưa có thành tựu nào được ghi nhận. Tiếp tục học tập và những dấu mốc của bạn sẽ xuất hiện tại đây.</p>
+  </section>
+  {% endif %}
+
+  <a class="btn btn-ghost achievement-back" href="{{ url_for('profile.index') }}">← Quay lại hồ sơ</a>
+</main>
+{% endblock %}

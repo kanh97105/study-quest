@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+{% block content %}
+<section class="panel planner-shell">
+  <div class="planner-heading">
+    <div>
+      <span class="tag">SMART EXAM PLANNER</span>
+      <h1>Kế hoạch ôn thi</h1>
+      <p class="muted">Theo dõi từng ngày, từng chủ đề và tiến độ thực tế của bạn.</p>
+    </div>
+    <a class="btn" href="{{ url_for('exam.planner_new') }}">+ Tạo kỳ thi</a>
+  </div>
+
+  {% if exams %}
+    <div class="exam-list">
+      {% for card in exams %}
+        {% set exam = card.exam %}
+        <a class="task exam-card" href="{{ url_for('exam.planner_detail', exam_id=exam.id if exam.id is defined else exam['id']) }}">
+          <div>
+            <span class="tag">{{ exam.subject if exam.subject is defined else exam['subject'] }}</span>
+            <h2>Ngày thi: {{ exam.exam_date if exam.exam_date is defined else exam['exam_date'] }}</h2>
+          </div>
+          <div class="progress-wrap">
+            <div class="progress"><span style="width: {{ card.progress }}%"></span></div>
+            <strong>{{ card.progress }}%</strong>
+          </div>
+        </a>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="task empty-state">
+      <h2>Chưa có kỳ thi nào</h2>
+      <p class="muted">Tạo kỳ thi đầu tiên để Planner chia nhỏ việc học thành các nhiệm vụ hằng ngày.</p>
+      <a class="btn" href="{{ url_for('exam.planner_new') }}">Tạo kế hoạch đầu tiên</a>
+    </div>
+  {% endif %}
+</section>
+{% endblock %}

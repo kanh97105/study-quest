@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% block content %}
+<section class="panel">
+  <p class="eyebrow">Study Quest · Kết quả</p>
+  <h1>Kết quả Quiz</h1>
+  <div class="stats">
+    <p><span class="muted">Môn học</span><br><strong>{{ subject }}</strong></p>
+    <p><span class="muted">Chủ đề</span><br><strong>{{ topic or 'Tất cả chủ đề' }}</strong></p>
+    <p><span class="muted">Số câu đúng</span><br><strong>{{ correct }}/{{ total }}</strong></p>
+    <p><span class="muted">Điểm</span><br><strong>{{ '%.1f'|format(score) }}/10</strong></p>
+    <p><span class="muted">EXP nhận được</span><br><strong>+{{ exp_earned }} EXP</strong></p>
+  </div>
+
+  <h2>Đáp án và giải thích</h2>
+  {% for q in results %}
+  <article class="panel quiz-review">
+    <h3>Câu {{ loop.index }}. {{ q.question_text }}</h3>
+    <p class="tag">{% if q.is_correct %}Đúng{% else %}Chưa đúng{% endif %}</p>
+    <p>Em chọn: <strong>{{ q.selected_answer or 'Chưa chọn' }}</strong></p>
+    <p>Đáp án đúng: <strong>{{ q.correct_answer }}</strong></p>
+    {% if q.explanation %}<p class="muted">Giải thích: {{ q.explanation }}</p>{% endif %}
+  </article>
+  {% endfor %}
+  <a class="btn" href="{{ url_for('quiz.index') }}">Làm Quiz khác</a>
+  <a class="btn ghost" href="{{ url_for('quiz.history') }}">Lịch sử Quiz</a>
+</section>
+{% endblock %}

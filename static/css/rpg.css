@@ -1,0 +1,214 @@
+.rpg-decoration-layer {
+  position: fixed;
+  z-index: 1;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+#main-content,
+.flash-stack,
+.footer {
+  position: relative;
+  z-index: 2;
+}
+
+.rpg-pixel-decor {
+  position: absolute;
+  display: block;
+  width: 4px;
+  height: 4px;
+  opacity: .48;
+  animation: rpg-drift 12s ease-in-out infinite alternate;
+}
+
+.rpg-pixel-star {
+  top: 24%;
+  left: 18px;
+  background: #b29036;
+  box-shadow: 4px 0 #b29036, -4px 0 #b29036, 0 4px #b29036, 0 -4px #b29036;
+}
+
+.rpg-pixel-star:nth-child(3) {
+  top: auto;
+  right: 20px;
+  bottom: 23%;
+  left: auto;
+  transform: scale(.75);
+  animation-delay: -5s;
+}
+
+.rpg-pixel-leaf {
+  top: 66%;
+  right: 18px;
+  background: var(--green);
+  box-shadow: 4px 0 var(--green), 4px 4px var(--green), 8px 4px var(--green);
+  transform: rotate(-20deg);
+  animation-delay: -3s;
+}
+
+.rpg-pixel-leaf:nth-child(4) {
+  top: 42%;
+  right: auto;
+  bottom: auto;
+  left: 24px;
+  transform: rotate(20deg) scale(.8);
+  animation-delay: -8s;
+}
+
+.rpg-xp-mini {
+  display: grid;
+  gap: 3px;
+  min-width: 112px;
+  padding: 5px 9px;
+  border: 1px solid var(--line);
+  border-radius: 11px;
+  background: rgba(255, 255, 255, .86);
+  color: var(--ink);
+}
+
+.rpg-xp-mini-level {
+  color: var(--green-dark);
+  font-size: 11px;
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+.rpg-xp-mini-progress {
+  display: grid;
+  grid-template-columns: auto 48px;
+  align-items: center;
+  gap: 6px;
+  color: var(--muted);
+  font-size: 9px;
+  line-height: 1.2;
+}
+
+.rpg-xp-mini progress {
+  display: block;
+  width: 48px;
+  height: 5px;
+  accent-color: var(--green);
+}
+
+.rpg-xp-mini progress::-webkit-progress-bar {
+  border-radius: 99px;
+  background: #e9ece3;
+}
+
+.rpg-xp-mini progress::-webkit-progress-value {
+  border-radius: 99px;
+  background: var(--green);
+}
+
+.rpg-xp-mini progress::-moz-progress-bar {
+  border-radius: 99px;
+  background: var(--green);
+}
+
+.rpg-xp-mini:hover {
+  border-color: rgba(71, 107, 72, .34);
+}
+
+.flash-achievement {
+  position: relative;
+  justify-content: flex-start;
+  gap: 14px;
+  overflow: hidden;
+  border-color: rgba(212, 175, 55, .42);
+  background: linear-gradient(110deg, #fffdf6, #fff);
+  color: var(--green-dark);
+  box-shadow: 0 8px 24px rgba(37, 49, 32, .08);
+  animation: achievement-notice-arrive .55s cubic-bezier(.2, .8, .25, 1.15) both;
+}
+
+.flash-achievement::before {
+  flex: 0 0 14px;
+  width: 14px;
+  height: 14px;
+  margin: 8px;
+  background: #d4af37;
+  box-shadow:
+    0 -8px #d4af37,
+    0 8px #d4af37,
+    -8px 0 #d4af37,
+    8px 0 #d4af37,
+    -5px -5px #d4af37,
+    5px -5px #d4af37,
+    -5px 5px #d4af37,
+    5px 5px #d4af37,
+    0 0 #f3d66f;
+  content: "";
+  image-rendering: pixelated;
+  animation: achievement-notice-sun .7s ease-out both;
+}
+
+.flash-achievement .flash-message {
+  font-weight: 800;
+}
+
+@keyframes achievement-notice-arrive {
+  0% {
+    opacity: 0;
+    transform: translateY(8px) scale(.98);
+  }
+
+  70% {
+    opacity: 1;
+    transform: translateY(-2px) scale(1.01);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes achievement-notice-sun {
+  0% {
+    filter: brightness(.8);
+    transform: scale(.65);
+  }
+
+  55% {
+    filter: brightness(1.35) drop-shadow(0 0 7px rgba(212, 175, 55, .62));
+    transform: scale(1.12);
+  }
+
+  100% {
+    filter: brightness(1);
+    transform: scale(1);
+  }
+}
+
+@keyframes rpg-drift {
+  from {
+    margin-top: -3px;
+  }
+
+  to {
+    margin-top: 4px;
+  }
+}
+
+@media (max-width: 760px) {
+  .rpg-xp-mini {
+    grid-column: 1 / -1;
+  }
+
+  .rpg-logout {
+    grid-column: 1 / -1;
+  }
+
+  .rpg-decoration-layer {
+    opacity: .55;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rpg-pixel-decor,
+  .flash-achievement,
+  .flash-achievement::before {
+    animation: none;
+  }
+}

@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+{% block content %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/quiz.css') }}">
+<main class="quiz-page">
+  <section class="panel quiz-hero">
+    <div class="quiz-hero-copy">
+      <span class="quiz-hero-icon" aria-hidden="true">✦</span>
+      <p class="eyebrow">Study Quest · Quiz</p>
+      <h1>Chọn bài Quiz</h1>
+      <p class="muted">Luyện tập từng chút một, ghi nhận tiến bộ của bạn qua mỗi câu trả lời.</p>
+      <div class="quiz-hero-note"><span aria-hidden="true">✨</span> Mỗi lượt có tối đa 10 câu hỏi</div>
+    </div>
+    <div class="quiz-hero-art" aria-hidden="true">
+      <span class="quiz-art-card quiz-art-card-back">?</span>
+      <span class="quiz-art-card quiz-art-card-front">✓</span>
+      <span class="quiz-art-spark">✦</span>
+    </div>
+  </section>
+
+  <section class="panel quiz-form-card" aria-labelledby="quiz-form-title">
+    <div class="quiz-form-heading">
+      <span class="quiz-form-heading-icon" aria-hidden="true">📝</span>
+      <div>
+        <h2 id="quiz-form-title">Thiết lập lượt học</h2>
+        <p class="muted">Chọn nội dung phù hợp với mục tiêu hôm nay.</p>
+      </div>
+    </div>
+
+    <form method="post" action="{{ url_for('quiz.start') }}" id="quiz-select-form">
+      <div class="quiz-fields">
+        <div class="quiz-field">
+          <label for="subject"><span aria-hidden="true">📚</span> Môn học</label>
+          <select class="quiz-control" id="subject" name="subject" required>
+            <option value="">-- Chọn môn học --</option>
+            {% for subject in subjects %}
+            <option value="{{ subject }}" {% if subject == selected_subject %}selected{% endif %}>{{ subject }}</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div class="quiz-field">
+          <label for="topic"><span aria-hidden="true">🔖</span> Chủ đề</label>
+          <select class="quiz-control" id="topic" name="topic" data-initial-topic="{{ selected_topic }}">
+            <option value="">Tất cả chủ đề</option>
+          </select>
+        </div>
+
+        <div class="quiz-field quiz-field-quantity">
+          <label for="quantity"><span aria-hidden="true">🔢</span> Số câu hỏi <span class="quiz-label-hint">(1–10)</span></label>
+          <input class="quiz-control" type="number" id="quantity" name="quantity" min="1" max="10" value="5" required>
+        </div>
+      </div>
+
+      <div class="quiz-form-footer">
+        <div class="stats quiz-topic-status" aria-live="polite">
+          <span class="tag" id="topic-status"><span aria-hidden="true">⏳</span> Chọn môn để tải chủ đề</span>
+        </div>
+        <div class="quiz-actions">
+          <button class="btn btn-primary quiz-start-button" type="submit"><span aria-hidden="true">🚀</span> Bắt đầu Quiz</button>
+          <a class="btn btn-ghost quiz-history-button" href="{{ url_for('quiz.history') }}"><span aria-hidden="true">📖</span> Xem lịch sử</a>
+        </div>
+      </div>
+    </form>
+  </section>
+</main>
+<script src="{{ url_for('static', filename='js/quiz.js') }}" defer></script>
+{% endblock %}

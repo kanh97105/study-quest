@@ -1,0 +1,165 @@
+{% extends "base.html" %}
+
+{% block title %}Pomodoro - Study Quest{% endblock %}
+
+{% block content %}
+<section class="section-pad" aria-labelledby="pomodoro-title">
+  <div class="container">
+    <div class="section-heading">
+      <span class="eyebrow">TẬP TRUNG & NGHỈ NGƠI</span>
+      <h1 id="pomodoro-title">Pomodoro</h1>
+      <p>Tùy chỉnh thời lượng tập trung theo nhịp học của bạn.</p>
+    </div>
+
+    <div class="panel pomodoro-card">
+      <form method="post" action="{{ url_for('pomodoro_start') }}" id="pomodoro-start-form">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+        <input type="hidden" name="duration_seconds" id="pomodoro-duration-seconds">
+      <label class="pomodoro-duration-label" for="pomodoro-clock">Thời lượng (HH:MM:SS)</label>
+      <input class="pomodoro-clock" id="pomodoro-clock" type="text" inputmode="numeric" value="{{ '%02d:%02d:%02d'|format(duration_seconds // 3600, (duration_seconds % 3600) // 60, duration_seconds % 60) }}" aria-describedby="pomodoro-duration-help" autocomplete="off" {% if timer_active %}disabled{% endif %}>
+      <p class="pomodoro-duration-help" id="pomodoro-duration-help">Ví dụ: nhập 01:00:00 để tập trung một giờ. Tối đa 99:59:59.</p>
+      <p class="pomodoro-status" id="pomodoro-status" aria-live="polite">{% if can_complete %}Hoàn thành phiên tập trung!{% elif timer_active %}Đang tập trung — cố lên nhé!{% else %}Sẵn sàng bắt đầu?{% endif %}</p>
+
+      <div class="pomodoro-actions">
+        <button class="btn btn-primary" id="pomodoro-start" type="submit" {% if timer_active %}disabled{% endif %}>Bắt đầu</button>
+      </div>
+      </form>
+
+      <div class="pomodoro-actions pomodoro-secondary-actions">
+        <button class="btn btn-ghost" id="pomodoro-reset" type="button" {% if timer_active %}disabled{% endif %}>Đặt lại</button>
+      </div>
+
+      <form method="post" action="{{ url_for('pomodoro_complete') }}" id="pomodoro-complete-form" {% if not can_complete %}hidden{% endif %}>
+        <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+        <button class="btn btn-primary" type="submit">Hoàn thành phiên và nhận EXP</button>
+      </form>
+
+      <form method="post" action="{{ url_for('pomodoro_stop') }}" id="pomodoro-stop-form" {% if not timer_active or can_complete %}hidden{% endif %}>
+        <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+        <button class="btn btn-ghost" type="submit">Dừng và lưu phiên</button>
+      </form>
+    </div>
+
+    <section class="panel pomodoro-history" aria-labelledby="pomodoro-history-title">
+      <h2 id="pomodoro-history-title">Lịch sử tập trung</h2>
+      {% if history %}
+      <ol class="pomodoro-history-list">
+        {% for item in history %}
+        <li><time>{{ item.entry }}</time></li>
+        {% endfor %}
+      </ol>
+      {% else %}
+      <p class="pomodoro-history-empty">Các phiên tập trung của bạn sẽ hiển thị tại đây.</p>
+      {% endif %}
+    </section>
+  </div>
+</section>
+
+<style>
+  .pomodoro-card{max-width:560px;margin:0 auto;text-align:center}
+  .pomodoro-duration-label{display:block;margin-bottom:8px;color:var(--ink-soft);font-size:13px;font-weight:700}
+  .pomodoro-clock{display:block;width:min(100%,470px);margin:0 auto;border:1px solid transparent;border-radius:14px;background:transparent;color:var(--green-dark);font-family:var(--font-display);font-size:clamp(54px,12vw,92px);font-weight:800;line-height:1.2;text-align:center;font-variant-numeric:tabular-nums}
+  .pomodoro-clock:focus{border-color:var(--line);outline:3px solid rgba(71,107,72,.18);background:var(--paper)}
+  .pomodoro-clock:disabled{opacity:1}
+  .pomodoro-duration-help{margin:8px 0 0;color:var(--muted);font-size:13px}
+  .pomodoro-status{min-height:26px;margin:16px 0 24px;color:var(--ink-soft)}
+  .pomodoro-actions{display:flex;justify-content:center;flex-wrap:wrap;gap:10px}
+  .pomodoro-secondary-actions{margin-top:10px}
+  #pomodoro-complete-form{margin-top:16px}
+  #pomodoro-complete-form:not([hidden]){display:block}
+  #pomodoro-complete-form button{width:100%}
+  #pomodoro-stop-form{margin-top:10px}
+  #pomodoro-stop-form:not([hidden]){display:block}
+  #pomodoro-stop-form button{width:100%}
+  .pomodoro-history{max-width:760px;margin:32px auto 0}
+  .pomodoro-history h2{margin-bottom:18px;font-family:var(--font-display);font-size:20px}
+  .pomodoro-history-list{display:grid;gap:10px;margin:0;padding:0;list-style:none}
+  .pomodoro-history-list li{padding:12px 14px;border:1px solid var(--line);border-radius:12px;background:var(--paper);color:var(--ink-soft);font-variant-numeric:tabular-nums}
+  .pomodoro-history-empty{margin:0;color:var(--muted)}
+</style>
+
+<script>
+  (() => {
+    const timerActive = {{ timer_active|tojson }};
+    const durationSeconds = {{ duration_seconds|tojson }};
+    let remainingSeconds = {{ remaining_seconds|tojson }};
+    let timerId = null;
+    let deadline = Date.now() + remainingSeconds * 1000;
+    const startForm = document.getElementById('pomodoro-start-form');
+    const clock = document.getElementById('pomodoro-clock');
+    const durationHelp = document.getElementById('pomodoro-duration-help');
+    const status = document.getElementById('pomodoro-status');
+    const startButton = document.getElementById('pomodoro-start');
+    const resetButton = document.getElementById('pomodoro-reset');
+    const completeForm = document.getElementById('pomodoro-complete-form');
+    const stopForm = document.getElementById('pomodoro-stop-form');
+    const durationInput = document.getElementById('pomodoro-duration-seconds');
+
+    const parseDuration = (value) => {
+      const match = value.trim().match(/^(\d{2}):([0-5]\d):([0-5]\d)$/);
+      if (!match) return null;
+      const hours = Number(match[1]);
+      if (hours > 99) return null;
+      const seconds = hours * 3600 + Number(match[2]) * 60 + Number(match[3]);
+      return seconds > 0 ? seconds : null;
+    };
+
+    const formatDuration = (seconds) => {
+      const hours = Math.floor(seconds / 3600);
+      const minutes = Math.floor((seconds % 3600) / 60);
+      const remaining = seconds % 60;
+      return [hours, minutes, remaining].map((part) => String(part).padStart(2, '0')).join(':');
+    };
+
+    const renderCountdown = () => {
+      clock.value = formatDuration(remainingSeconds);
+    };
+
+    const stopTimer = () => {
+      window.clearInterval(timerId);
+      timerId = null;
+    };
+
+    startForm.addEventListener('submit', (event) => {
+      const duration = parseDuration(clock.value);
+      if (duration === null) {
+        event.preventDefault();
+        durationHelp.textContent = 'Nhập thời lượng dạng HH:MM:SS từ 00:00:01 đến 99:59:59.';
+        clock.setAttribute('aria-invalid', 'true');
+        clock.focus();
+        return;
+      }
+      durationInput.value = String(duration);
+    });
+
+    const runTimer = () => {
+      if (timerId !== null || remainingSeconds <= 0) return;
+      deadline = Date.now() + remainingSeconds * 1000;
+      timerId = window.setInterval(() => {
+        remainingSeconds = Math.max(0, Math.ceil((deadline - Date.now()) / 1000));
+        renderCountdown();
+        if (remainingSeconds <= 0) {
+          stopTimer();
+          status.textContent = 'Hoàn thành phiên tập trung!';
+          stopForm.hidden = true;
+          completeForm.hidden = false;
+          completeForm.querySelector('button').focus();
+        }
+      }, 1000);
+    };
+
+    resetButton.addEventListener('click', () => {
+      clock.value = '00:25:00';
+      clock.removeAttribute('aria-invalid');
+      durationHelp.textContent = 'Ví dụ: nhập 01:00:00 để tập trung một giờ. Tối đa 99:59:59.';
+    });
+
+    clock.addEventListener('input', () => {
+      clock.removeAttribute('aria-invalid');
+      durationHelp.textContent = 'Ví dụ: nhập 01:00:00 để tập trung một giờ. Tối đa 99:59:59.';
+    });
+
+    if (timerActive) runTimer();
+  })();
+</script>
+{% endblock %}

@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% block content %}
+<section class="panel planner-shell" data-exam-id="{{ exam.id if exam.id is defined else exam['id'] }}">
+  <div class="planner-heading">
+    <div>
+      <a class="muted" href="{{ url_for('exam.planner_index') }}">← Tất cả kỳ thi</a>
+      <span class="tag">{{ exam.subject if exam.subject is defined else exam['subject'] }}</span>
+      <h1>Kế hoạch đến ngày {{ exam.exam_date if exam.exam_date is defined else exam['exam_date'] }}</h1>
+      <p class="muted">{{ topics|length }} chủ đề · {{ exam.study_minutes_per_day if exam.study_minutes_per_day is defined else exam['study_minutes_per_day'] }} phút/ngày</p>
+    </div>
+    <div class="progress-summary">
+      <strong data-progress-value>{{ progress }}%</strong>
+      <div class="progress" aria-label="Tiến độ"><span data-progress-bar style="width: {{ progress }}%"></span></div>
+      <span class="muted">tiến độ hoàn thành</span>
+    </div>
+  </div>
+
+  <div class="topic-strip">
+    {% for topic in topics %}<span class="tag">{{ topic.name if topic.name is defined else topic['name'] if topic is mapping and 'name' in topic else topic }}</span>{% endfor %}
+  </div>
+
+  {% if plan %}
+    <div class="plan-list">
+      {% for item in plan %}
+        {% set item_id = item.id if item.id is defined else item['id'] %}
+        {% set done = item.completed if item.completed is defined else item['completed'] if item is mapping and 'completed' in item else false %}
+        <article class="task plan-item {% if done %}is-complete{% endif %}">
+          <form method="post" action="{{ url_for('exam.planner_toggle', exam_id=exam.id if exam.id is defined else exam['id'], plan_id=item_id) }}" data-plan-form>
+            <button class="check-button" type="submit" aria-label="Đánh dấu hoàn thành" aria-pressed="{{ 'true' if done else 'false' }}">{{ '✓' if done else '○' }}</button>
+          </form>
+          <div class="plan-copy">
+            <div class="plan-meta"><span class="tag">{{ item.study_date if item.study_date is defined else item['study_date'] }}</span><span class="tag activity-tag">{{ item.activity_type if item.activity_type is defined else item['activity_type'] }}</span></div>
+            <h2>{{ item.title if item.title is defined else item['title'] }}</h2>
+            <p class="muted">Hoàn thành nhiệm vụ này để củng cố chủ đề và cập nhật tiến độ ôn thi.</p>
+          </div>
+          <span class="muted">{{ item.duration_minutes if item.duration_minutes is defined else item['duration_minutes'] }} phút</span>
+        </article>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="task"><p class="muted">Chưa có nhiệm vụ. Hãy kiểm tra lại danh sách chủ đề.</p></div>
+  {% endif %}
+</section>
+<script src="{{ url_for('static', filename='js/planner.js') }}" defer></script>
+{% endblock %}
