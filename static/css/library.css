@@ -1,0 +1,40 @@
+.library-page{padding-top:48px;padding-bottom:72px}
+.library-heading{max-width:680px;margin-bottom:28px}
+.library-eyebrow{display:inline-block;color:var(--green);font-size:10px;font-weight:800;letter-spacing:1.5px}
+.library-heading h1,.library-detail-copy h1{margin:8px 0;font-family:var(--font-display);font-size:clamp(34px,5vw,48px);line-height:1.12;letter-spacing:-1.8px}
+.library-heading p{margin:0;color:var(--ink-soft);font-size:15px}
+.library-toolbar{display:grid;grid-template-columns:minmax(220px,1fr) minmax(150px,.55fr) minmax(150px,.55fr) auto;align-items:end;gap:12px;margin-bottom:26px;padding:18px;border:1px solid var(--line);border-radius:18px;background:var(--white)}
+.library-toolbar label{display:grid;gap:6px;color:var(--ink-soft);font-size:12px;font-weight:700}
+.library-toolbar input,.library-toolbar select{min-height:44px}
+.library-actions{display:flex;gap:8px}
+.library-actions .btn{min-height:44px;padding-inline:14px;white-space:nowrap}
+.library-count{margin:0 0 12px;color:var(--muted);font-size:13px}
+.library-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(245px,1fr));gap:18px}
+.library-card{overflow:hidden;border:1px solid var(--line);border-radius:18px;background:var(--white);box-shadow:0 8px 24px rgba(37,49,32,.04);transition:transform .2s,box-shadow .2s}
+.library-card:hover{transform:translateY(-3px);box-shadow:var(--shadow)}
+.library-cover-link{display:block;overflow:hidden;background:#edf0e7}
+.library-cover{display:block;width:100%;height:230px;object-fit:cover;object-position:center}
+.library-card-body{display:flex;min-height:245px;flex-direction:column;align-items:flex-start;padding:18px}
+.library-card h2{margin:0 0 6px;font-family:var(--font-display);font-size:19px;line-height:1.3;letter-spacing:-.4px}
+.library-author{margin:0 0 10px;color:var(--muted);font-size:12px}
+.library-tags{display:flex;flex-wrap:wrap;gap:7px;margin:2px 0 10px}
+.library-description{margin:0 0 15px;color:var(--ink-soft);font-size:13px;line-height:1.65}
+.library-card-actions{display:flex;flex-wrap:wrap;gap:14px;margin-top:auto;padding-top:10px}
+.text-link{color:var(--green-dark);font-size:13px;font-weight:800}
+.text-link:hover{text-decoration:underline;text-underline-offset:3px}
+.library-empty{display:grid;justify-items:center;gap:8px;padding:48px 20px;border:1px dashed #d8ddd1;border-radius:18px;background:#fcfcf9;text-align:center}
+.library-empty>span{font-size:32px}
+.library-empty h2,.library-empty p{margin:0}
+.library-empty p{color:var(--muted);font-size:14px}
+.library-detail{padding:24px;border:1px solid var(--line);border-radius:22px;background:var(--white);box-shadow:0 8px 24px rgba(37,49,32,.04)}
+.library-back{margin:0 0 20px;color:var(--muted);font-size:13px}
+.library-back a:hover{color:var(--green-dark)}
+.library-detail-layout{display:grid;grid-template-columns:minmax(220px, .75fr) minmax(0,1.25fr);align-items:start;gap:34px}
+.library-detail-cover{display:block;width:100%;max-height:520px;aspect-ratio:4/5;object-fit:cover;border-radius:16px;background:#edf0e7}
+.library-detail-copy h1{margin-top:8px}
+.library-detail-author{margin:12px 0;color:var(--ink-soft)}
+.library-detail-description{margin:25px 0;color:var(--ink-soft);line-height:1.8}
+.library-detail-description h2{margin:0 0 8px;color:var(--ink);font-family:var(--font-display);font-size:20px}
+.library-detail-description p{margin:0}
+@media(max-width:850px){.library-toolbar{grid-template-columns:1fr 1fr}.library-search{grid-column:1/-1}.library-actions{grid-column:1/-1}.library-detail-layout{grid-template-columns:minmax(180px,.7fr) minmax(0,1.3fr);gap:22px}}
+@media(max-width:600px){.library-page{padding-top:32px;padding-bottom:52px}.library-toolbar{grid-template-columns:1fr;padding:14px}.library-search,.library-actions{grid-column:auto}.library-actions .btn{flex:1}.library-grid{grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:13px}.library-card-body{min-height:220px;padding:15px}.library-cover{height:210px}.library-detail{padding:17px}.library-detail-layout{grid-template-columns:1fr}.library-detail-cover{width:min(100%,360px);margin-inline:auto;max-height:420px}.library-detail-copy h1{font-size:36px}}
