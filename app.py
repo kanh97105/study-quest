@@ -1,6 +1,8 @@
 import os
+import re
 import secrets
 import sqlite3
+import time
 from datetime import date, datetime, timedelta, timezone
 from functools import wraps
 
@@ -113,7 +115,98 @@ def inject_globals():
 
 @app.route('/')
 def index():
-    return render_template('index.html')
+    return render_template(
+        'index.html',
+        contact_csrf_token=_contact_csrf_token(),
+        contact_values={},
+        contact_cooldown_remaining=_contact_cooldown_remaining(),
+    )
+
+
+CONTACT_COOLDOWN_SECONDS = 15
+
+
+def _contact_cooldown_remaining():
+    last_sent = session.get('contact_last_sent')
+    if not isinstance(last_sent, (int, float)):
+        return 0
+    return max(0, int(CONTACT_COOLDOWN_SECONDS - (time.time() - last_sent) + 0.999))
+
+
+def _contact_csrf_token():
+    token = session.get('contact_csrf')
+    if not token:
+        token = secrets.token_urlsafe(32)
+        session['contact_csrf'] = token
+    return token
+
+
+@app.post('/contact')
+def contact():
+    expected_token = session.get('contact_csrf', '')
+    posted_token = request.form.get('csrf_token', '')
+    if not expected_token or not secrets.compare_digest(str(expected_token), str(posted_token)):
+        flash('Phiên gửi lời nhắn không hợp lệ. Em tải lại trang rồi thử lại nhé.', 'warning')
+        return redirect(url_for('index') + '#lien-he')
+
+    name = request.form.get('name', '').strip()
+    email = request.form.get('email', '').strip()
+    subject = request.form.get('subject', '').strip()
+    message = request.form.get('message', '').strip()
+    contact_values = {
+        'name': name,
+        'email': email,
+        'subject': subject,
+        'message': message,
+    }
+
+    allowed_subjects = {
+        'Góp ý về website',
+        'Báo lỗi',
+        'Hỏi về tính năng',
+        'Khác',
+    }
+    error = None
+    if not name or not email or not subject or not message:
+        error = 'Vui lòng điền đầy đủ các trường bắt buộc.'
+    elif len(name) > 120:
+        error = 'Họ và tên không được vượt quá 120 ký tự.'
+    elif len(email) > 254 or not re.fullmatch(r'[^@\s]+@[^@\s]+\.[^@\s]+', email):
+        error = 'Vui lòng nhập địa chỉ email hợp lệ.'
+    elif subject not in allowed_subjects:
+        error = 'Vui lòng chọn một chủ đề hợp lệ.'
+    elif len(message) > 2000:
+        error = 'Nội dung câu hỏi không được vượt quá 2000 ký tự.'
+
+    if error:
+        flash(error, 'warning')
+        return render_template(
+            'index.html',
+            contact_csrf_token=_contact_csrf_token(),
+            contact_values=contact_values,
+            contact_cooldown_remaining=_contact_cooldown_remaining(),
+        ), 400
+
+    cooldown_remaining = _contact_cooldown_remaining()
+    if cooldown_remaining:
+        flash(f'Em có thể gửi lời nhắn tiếp theo sau {cooldown_remaining} giây nữa nhé.', 'warning')
+        return render_template(
+            'index.html',
+            contact_csrf_token=_contact_csrf_token(),
+            contact_values=contact_values,
+            contact_cooldown_remaining=cooldown_remaining,
+        ), 429
+
+    db = get_db()
+    db.execute(
+        'INSERT INTO contact_messages(name, email, subject, message) VALUES(?, ?, ?, ?)',
+        (name, email, subject, message),
+    )
+    db.commit()
+    session.pop('contact_csrf', None)
+    session['contact_last_sent'] = time.time()
+    flash('Đã gửi lời nhắn thành công.', 'success')
+    return redirect(url_for('index') + '#lien-he')
 
 
 @app.route('/manus-routes.json')
@@ -386,6 +479,16 @@ def pomodoro_stop():
 @admin_required
 def admin():
     db = get_db(); stats = {'users': db.execute('SELECT COUNT(*) FROM users').fetchone()[0], 'questions': db.execute('SELECT COUNT(*) FROM questions').fetchone()[0], 'attempts': db.execute('SELECT COUNT(*) FROM quiz_attempts').fetchone()[0], 'plans': db.execute('SELECT COUNT(*) FROM study_plans').fetchone()[0]}; users = db.execute('SELECT id,username,email,role,created_at FROM users ORDER BY id DESC LIMIT 10').fetchall(); return render_template('admin.html', stats=stats, users=users)
+
+
+@app.route('/admin/contact-messages')
+@admin_required
+def admin_contact_messages():
+    messages = get_db().execute(
+        'SELECT id, name, email, subject, message, created_at '
+        'FROM contact_messages ORDER BY id DESC'
+    ).fetchall()
+    return render_template('admin/contact_messages.html', messages=messages)
 
 
 @app.errorhandler(404)

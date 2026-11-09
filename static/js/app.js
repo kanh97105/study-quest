@@ -33,4 +33,23 @@
       if (message) message.remove();
     });
   });
+
+  const contactSubmit = document.querySelector('#contact-submit');
+  if (contactSubmit) {
+    let remaining = Number.parseInt(contactSubmit.dataset.cooldown || '0', 10);
+    if (Number.isFinite(remaining) && remaining > 0) {
+      contactSubmit.disabled = true;
+      contactSubmit.textContent = `Đã gửi — thử lại sau ${remaining} giây`;
+      const countdown = window.setInterval(() => {
+        remaining -= 1;
+        if (remaining > 0) {
+          contactSubmit.textContent = `Đã gửi — thử lại sau ${remaining} giây`;
+          return;
+        }
+        window.clearInterval(countdown);
+        contactSubmit.disabled = false;
+        contactSubmit.textContent = 'Gửi lời nhắn';
+      }, 1000);
+    }
+  }
 })();

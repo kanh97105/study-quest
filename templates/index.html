@@ -3,11 +3,11 @@
 {% block title %}Study Quest — Học tập theo cách của bạn{% endblock %}
 
 {% block content %}
-<section class="hero-section">
+<section class="hero-section" id="gioi-thieu">
   <div class="container hero">
     <div class="hero-copy">
       <span class="eyebrow"><span class="eyebrow-dot"></span> Hành trình ôn thi THPT của bạn</span>
-      <h1>Chinh phục mục tiêu.<br><span class="text-highlight">Lên level mỗi ngày.</span></h1>
+      <h1 id="chinh-phuc-muc-tieu">Chinh phục mục tiêu.<br><span class="text-highlight">Lên level mỗi ngày.</span></h1>
       <p class="hero-description">Một chút kế hoạch, một chút tập trung — và thật nhiều tiến bộ. Study Quest giúp bạn học chủ động, theo dõi hành trình và biến mỗi phiên ôn tập thành một chiến thắng.</p>
       <div class="hero-actions">
         <a class="btn btn-primary btn-large" href="/register">Bắt đầu hành trình <span aria-hidden="true">↗</span></a>
@@ -38,7 +38,7 @@
   <div class="container">
     <div class="section-heading">
       <span class="eyebrow">BỘ CÔNG CỤ CỦA BẠN</span>
-      <h2>Mọi thứ cần có để <span class="text-highlight">bứt phá.</span></h2>
+      <h2 id="bo-cong-cu">Mọi thứ cần có để <span class="text-highlight">bứt phá.</span></h2>
       <p>Từ việc lên lịch đến phút giải lao — mỗi tính năng đều giúp bạn học nhẹ nhàng và hiệu quả hơn.</p>
     </div>
     <div class="feature-grid grid">
@@ -51,7 +51,7 @@
   </div>
 </section>
 
-<section class="welcome-media-section section-pad" aria-labelledby="welcome-media-title">
+<section class="welcome-media-section section-pad" id="loi-nhan-study-quest" aria-labelledby="welcome-media-title">
   <div class="container">
     <div class="section-heading">
       <span class="eyebrow">LỜI NHẮN TỪ NHÓM STUDY QUEST</span>
@@ -108,14 +108,14 @@
   })();
 </script>
 
-<section class="closing-section">
+<section class="closing-section" id="buoc-dau-tien">
   <div class="container closing-panel panel">
     <div><span class="eyebrow">BƯỚC ĐẦU TIÊN CŨNG LÀ TIẾN BỘ</span><h2>Sẵn sàng viết tiếp<br>câu chuyện của bạn?</h2><p>Bắt đầu bằng một mục tiêu nhỏ cho hôm nay.</p></div>
     <a class="btn btn-primary btn-large" href="/register">Tạo tài khoản miễn phí <span aria-hidden="true">↗</span></a>
     <span class="closing-star" aria-hidden="true">✳</span>
   </div>
 </section>
-<section class="about-project-section section-pad" aria-labelledby="about-project-title">
+<section class="about-project-section section-pad" id="ve-du-an" aria-labelledby="about-project-title">
   <div class="container">
     <div class="section-heading">
       <span class="eyebrow">VỀ STUDY QUEST</span>
@@ -129,20 +129,7 @@
     </div>
   </div>
 </section>
-<section class="contact-section section-pad" aria-labelledby="contact-title">
-  <div class="container">
-    <div class="section-heading">
-      <span class="eyebrow">VỀ DỰ ÁN</span>
-      <h2 id="contact-title">Liên hệ</h2>
-    </div>
-    <div class="contact-card">
-      <strong>Study Quest – Smart Exam Planner</strong>
-      <p>Contact: 12A1 Hoàng Diệu</p>
-      <p>Dự án Tin học lớp 12A1 Hoàng Diệu</p>
-    </div>
-  </div>
-</section>
-<section class="team-section section-pad" aria-labelledby="team-title">
+<section class="team-section section-pad" id="doi-ngu" aria-labelledby="team-title">
   <div class="container">
     <div class="section-heading">
       <span class="eyebrow">NHỮNG NGƯỜI ĐỨNG SAU STUDY QUEST</span>
@@ -160,13 +147,57 @@
     </ul>
   </div>
 </section>
+<section class="contact-section section-pad" id="lien-he" aria-labelledby="contact-title">
+  <div class="container">
+    <div class="contact-layout">
+      <div class="contact-copy">
+        <span class="eyebrow">STUDY QUEST</span>
+        <h2 id="contact-title">Liên hệ với chúng tôi</h2>
+        <p>Bạn muốn tìm hiểu thêm về Study Quest, có góp ý hoặc cần hỗ trợ?</p>
+        <p>Hãy gửi lời nhắn cho chúng tôi.</p>
+        <div class="contact-card">
+          <strong>Study Quest – Smart Exam Planner</strong>
+          <p>Contact: 12A1 Hoàng Diệu</p>
+          <p>Dự án Tin học lớp 12A1 Hoàng Diệu</p>
+        </div>
+      </div>
+      <form class="contact-form" method="post" action="{{ url_for('contact') }}" aria-label="Biểu mẫu liên hệ">
+        <input type="hidden" name="csrf_token" value="{{ contact_csrf_token }}">
+        <label for="contact-name">Họ và tên</label>
+        <input class="input" type="text" id="contact-name" name="name" value="{{ contact_values.get('name', '') }}" maxlength="120" autocomplete="name" required>
+
+        <label for="contact-email">Email</label>
+        <input class="input" type="email" id="contact-email" name="email" value="{{ contact_values.get('email', '') }}" maxlength="254" autocomplete="email" required>
+
+        <label for="contact-subject">Chủ đề</label>
+        <select class="select" id="contact-subject" name="subject" required>
+          <option value="" {% if not contact_values.get('subject') %}selected{% endif %} disabled>Chọn chủ đề</option>
+          {% for option in ['Góp ý về website', 'Báo lỗi', 'Hỏi về tính năng', 'Khác'] %}
+            <option value="{{ option }}" {% if contact_values.get('subject') == option %}selected{% endif %}>{{ option }}</option>
+          {% endfor %}
+        </select>
+
+        <label for="contact-message">Nội dung câu hỏi</label>
+        <textarea class="textarea" id="contact-message" name="message" maxlength="2000" required>{{ contact_values.get('message', '') }}</textarea>
+
+        <button class="btn btn-primary" id="contact-submit" type="submit" aria-live="polite" data-cooldown="{{ contact_cooldown_remaining }}" {% if contact_cooldown_remaining %}disabled{% endif %}>{% if contact_cooldown_remaining %}Đã gửi — thử lại sau {{ contact_cooldown_remaining }} giây{% else %}Gửi lời nhắn{% endif %}</button>
+      </form>
+    </div>
+  </div>
+</section>
 <footer class="footer">
   <div class="container footer-inner">
     <a class="footer-brand" href="/">
       <img src="{{ url_for('static', filename='images/study-quest-mark.svg') }}" alt="" width="28" height="28">
       <span>Study Quest</span>
     </a>
-    <p>Học tốt, chơi vui. Mỗi ngày tiến thêm một chút.</p>
+    <div class="footer-copy">
+      <p>Học tốt, chơi vui. Mỗi ngày tiến thêm một chút.</p>
+      <p>Study Quest – Smart Exam Planner</p>
+      <p>Dự án Tin học lớp 12A1 Hoàng Diệu</p>
+      <p>Liên hệ: 12A1 Hoàng Diệu</p>
+      <p>© 2026 Study Quest. Bản quyền thuộc về nhóm thực hiện.</p>
+    </div>
     <div class="footer-links"><a href="/planner">Planner</a><a href="/quiz">Quiz</a><a href="/library">Library</a><a href="/login">Đăng nhập</a></div>
   </div>
 </footer>

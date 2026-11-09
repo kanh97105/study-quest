@@ -10,6 +10,25 @@ button,input,select,textarea{font:inherit}
 button,a{-webkit-tap-highlight-color:transparent}
 .container{width:min(1160px,calc(100% - 56px));margin-inline:auto}
 .skip-link{position:absolute;left:12px;top:-60px;z-index:1000;padding:10px 14px;background:var(--ink);color:#fff;border-radius:8px}.skip-link:focus{top:12px}
+.contact-layout{display:grid;grid-template-columns:1fr 1fr;align-items:start;gap:32px;max-width:1000px;margin:0 auto}
+.contact-copy{color:var(--ink-soft);font-size:clamp(16px,2vw,19px);line-height:1.8}
+.contact-copy h2{margin:13px 0 16px;color:var(--ink);font-family:var(--font-display);font-size:clamp(30px,4vw,43px);line-height:1.18;letter-spacing:-1.8px}
+.contact-copy p{margin:0}
+.contact-copy p+p{margin-top:5px}
+.contact-copy .contact-card{width:100%;max-width:none;margin:22px 0 0;text-align:left}
+.contact-form{display:grid;gap:10px;padding:24px;border:1px solid var(--line);border-radius:var(--radius);background:var(--white);box-shadow:var(--shadow)}
+.contact-form label{margin-top:3px;color:var(--ink-soft);font-size:13px;font-weight:700}
+.contact-form textarea{min-height:150px}
+.contact-form .btn{justify-self:start;margin-top:5px}
+.admin-messages{display:grid;gap:14px}
+.admin-message{padding:20px;border:1px solid var(--line);border-radius:16px;background:var(--white);box-shadow:0 8px 24px rgba(37,49,32,.04)}
+.admin-message-header{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:8px 18px;margin-bottom:12px}
+.admin-message-header h2{margin:0;font-family:var(--font-display);font-size:18px}
+.admin-message-meta{display:grid;gap:3px;color:var(--muted);font-size:13px}
+.admin-message-body{margin:14px 0 0;color:var(--ink-soft);white-space:pre-wrap;overflow-wrap:anywhere}
+.footer-copy{display:grid;flex:1;gap:3px}
+.footer-copy p{line-height:1.45}
+@media(max-width:760px){.contact-layout{grid-template-columns:1fr;gap:24px}.contact-form{padding:20px}.footer-copy{flex-basis:100%;order:2}.footer-links{order:3}}
 .site-header{position:sticky;top:0;z-index:50;background:rgba(248,247,242,.9);backdrop-filter:blur(16px);border-bottom:1px solid rgba(32,37,31,.07)}
 .navbar{min-height:78px;display:flex;align-items:center;justify-content:space-between;gap:28px}
 .brand{display:flex;align-items:center;gap:10px;flex:none}.brand-mark{width:40px;height:40px}.brand-name{font-family:var(--font-display);font-size:19px;font-weight:800;letter-spacing:-.8px;line-height:1.05}.brand-name>span{color:var(--green)}.brand-name small{display:block;margin-top:5px;font-family:var(--font-body);font-size:9px;letter-spacing:1.1px;text-transform:uppercase;color:var(--muted);font-weight:700}

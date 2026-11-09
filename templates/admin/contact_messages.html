@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block title %}Lời nhắn liên hệ - Study Quest{% endblock %}
+
+{% block content %}
+<section class="section-pad">
+  <div class="container">
+    <div class="section-heading">
+      <span class="eyebrow">KHU VỰC ADMIN</span>
+      <h1>Lời nhắn liên hệ</h1>
+      <p>Các lời nhắn gửi đến Study Quest, mới nhất ở trên.</p>
+    </div>
+
+    {% if messages %}
+    <div class="admin-messages">
+      {% for item in messages %}
+      <article class="admin-message">
+        <div class="admin-message-header">
+          <h2>{{ item['subject'] }}</h2>
+          <time class="muted" datetime="{{ item['created_at'] }}">{{ item['created_at'] }}</time>
+        </div>
+        <div class="admin-message-meta">
+          <span><strong>Người gửi:</strong> {{ item['name'] }}</span>
+          <span><strong>Email:</strong> {{ item['email'] }}</span>
+        </div>
+        <p class="admin-message-body">{{ item['message'] }}</p>
+      </article>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-state">
+      <div>
+        <h2>Chưa có lời nhắn</h2>
+        <p>Khi có người gửi liên hệ, nội dung sẽ xuất hiện ở đây.</p>
+      </div>
+    </div>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

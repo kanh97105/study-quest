@@ -38,6 +38,9 @@
           <a class="nav-link{% if request.path.startswith('/library') %} is-active{% endif %}" href="/library">Library</a>
           <a class="nav-link{% if request.path.startswith('/profile') %} is-active{% endif %}" href="/profile">Profile</a>
           {% if current_user %}
+          {% if current_user['role'] == 'admin' %}
+          <a class="nav-link{% if request.path.startswith('/admin/contact-messages') %} is-active{% endif %}" href="{{ url_for('admin_contact_messages') }}">Lời nhắn</a>
+          {% endif %}
           <a class="nav-link{% if request.path.startswith('/pomodoro') %} is-active{% endif %}" href="{{ url_for('pomodoro') }}">Pomodoro</a>
           {% endif %}
         </div>
