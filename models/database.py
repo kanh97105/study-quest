@@ -129,14 +129,6 @@ CREATE TABLE IF NOT EXISTS achievements (
     UNIQUE(user_id, title),
     FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE
 );
-CREATE TABLE IF NOT EXISTS contact_messages (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    name TEXT NOT NULL,
-    email TEXT NOT NULL,
-    subject TEXT NOT NULL,
-    message TEXT NOT NULL,
-    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
-);
 """
 
 QUESTION_SEED = [
@@ -148,11 +140,40 @@ QUESTION_SEED = [
 ]
 
 BOOK_SEED = [
-    ('Chinh phục Toán 12', 'Nhiều tác giả', 'Toán', 'Học tập', 'Hàm số', 'Tài liệu ôn tập nền tảng Toán 12.', '', '', 4.5),
-    ('Sổ tay Hóa hữu cơ', 'Study Quest', 'Hóa', 'Học tập', 'Hữu cơ', 'Tóm tắt phản ứng và công thức Hóa hữu cơ.', '', '', 4.5),
-    ('Ngữ pháp tiếng Anh THPT', 'Study Quest', 'Anh', 'Học tập', 'Ngữ pháp', 'Các chủ điểm ngữ pháp thường gặp.', '', '', 4.5),
-    ('Vật lý 12 trọng tâm', 'Nhiều tác giả', 'Lý', 'Học tập', 'Dao động', 'Tổng hợp công thức và bài tập Vật lý.', '', '', 4.5),
-    ('Kỹ năng tự học hiệu quả', 'Study Quest', 'Kỹ năng', 'Lối sống', 'Tự học', 'Gợi ý xây dựng thói quen học tập.', '', '', 4.5),
+    (
+        'Chinh phục Toán 12', 'StudyQuest', 'Toán', 'Học tập', 'Hàm số',
+        'Bộ tài liệu tổng hợp kiến thức trọng tâm Toán 12 theo chương trình THPT. '
+        'Nội dung gồm lý thuyết, công thức quan trọng, ví dụ minh họa và bài tập '
+        'luyện tập giúp học sinh củng cố nền tảng, chuẩn bị cho các kỳ kiểm tra '
+        'và kỳ thi tốt nghiệp.',
+        'images/library/toan.png', '', 4.5,
+    ),
+    (
+        'Kỹ năng tự học hiệu quả', 'StudyQuest', 'Kỹ năng', 'Lối sống', 'Tự học',
+        'Chia sẻ những phương pháp học tập khoa học, cách xây dựng thói quen học '
+        'tập bền vững, quản lý thời gian và duy trì động lực để nâng cao hiệu quả tự học.',
+        'images/library/tuhoc.png', '', 4.5,
+    ),
+    (
+        'Ngữ pháp tiếng Anh THPT', 'StudyQuest', 'Tiếng Anh', 'Học tập', 'Ngữ pháp',
+        'Tổng hợp các chuyên đề ngữ pháp tiếng Anh thường gặp trong chương trình '
+        'THPT như thì, câu bị động, mệnh đề quan hệ, câu điều kiện và nhiều cấu '
+        'trúc quan trọng khác kèm ví dụ minh họa.',
+        'images/library/ta.png', '', 4.5,
+    ),
+    (
+        'Sổ tay Hóa hữu cơ', 'StudyQuest', 'Hóa học', 'Học tập', 'Hữu cơ',
+        'Tóm tắt kiến thức Hóa hữu cơ dưới dạng sơ đồ và bảng tổng hợp, bao gồm '
+        'các phản ứng đặc trưng, công thức cần nhớ và mẹo giải nhanh các dạng bài thường gặp.',
+        'images/library/hoa.png', '', 4.5,
+    ),
+    (
+        'Vật lý 12 trọng tâm', 'StudyQuest', 'Vật lý', 'Học tập', 'Dao động cơ',
+        'Tổng hợp kiến thức và công thức trọng tâm chương Dao động cơ lớp 12, '
+        'kết hợp bài tập minh họa và hướng dẫn giải giúp học sinh ôn luyện hiệu '
+        'quả cho các kỳ thi.',
+        'images/library/vatly.png', '', 4.5,
+    ),
 ]
 
 
@@ -208,11 +229,23 @@ def _seed_questions(db):
 
 
 def _seed_books(db):
-    if db.execute('SELECT COUNT(*) FROM books').fetchone()[0] == 0:
-        db.executemany(
-            'INSERT INTO books(title,author,subject,category,topic,description,cover_url,resource_url,rating) VALUES(?,?,?,?,?,?,?,?,?)',
-            BOOK_SEED,
-        )
+    for book in BOOK_SEED:
+        existing = db.execute(
+            'SELECT id FROM books WHERE title = ?',
+            (book[0],),
+        ).fetchone()
+        if existing:
+            db.execute(
+                'UPDATE books SET author=?, subject=?, category=?, topic=?, '
+                'description=?, cover_url=?, resource_url=?, rating=? WHERE id=?',
+                (*book[1:], existing['id']),
+            )
+        else:
+            db.execute(
+                'INSERT INTO books(title,author,subject,category,topic,description,cover_url,resource_url,rating) '
+                'VALUES(?,?,?,?,?,?,?,?,?)',
+                book,
+            )
 
 
 if __name__ == '__main__':
