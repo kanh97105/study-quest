@@ -17,6 +17,14 @@
     <a href="{{ url_for('library.list_books_view') }}">← Quay lại thư viện</a>
   </p>
 
+  {% if cover_url %}
+    <img
+      src="{{ cover_url }}"
+      alt="Bìa {{ title }}"
+      style="display: block; width: min(100%, 280px); max-height: 360px; object-fit: cover; margin: 0 auto 1rem; border-radius: 0.75rem;"
+    />
+  {% endif %}
+
   <h1 style="margin: 0 0 0.5rem;">{{ title }}</h1>
 
   {% if author %}
