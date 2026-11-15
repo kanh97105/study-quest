@@ -9,6 +9,7 @@ from flask import (
     render_template,
     request,
     abort,
+    url_for,
 )
 from urllib.parse import urlencode
 
@@ -65,6 +66,34 @@ def _safe_list_options(func):
         return func() or []
     except Exception:
         return []
+
+
+def _book_cover_url(book):
+    cover = _get_field(book, "cover_url")
+    if cover:
+        cover = str(cover).strip()
+        if cover.startswith(("http://", "https://", "/")):
+            return cover
+        if cover.startswith("static/"):
+            cover = cover[len("static/"):]
+        return url_for("static", filename=cover)
+
+    subject = str(_get_field(book, "subject", default="")).strip().casefold()
+    covers_by_subject = {
+        "toán": "toan.png",
+        "hóa": "hoa.png",
+        "hóa học": "hoa.png",
+        "anh": "ta.png",
+        "anh văn": "ta.png",
+        "tiếng anh": "ta.png",
+        "lý": "vatly.png",
+        "vật lý": "vatly.png",
+        "kỹ năng": "tuhoc.png",
+    }
+    filename = covers_by_subject.get(subject)
+    if filename:
+        return url_for("static", filename=f"images/library/{filename}")
+    return None
 
 
 def _normalize_options(items):
@@ -124,6 +153,11 @@ def list_books_view():
         # Không để crash trang; hiển thị danh sách rỗng + thông báo
         books = []
 
+    books = books or []
+    book_covers = {
+        _get_field(book, "id"): _book_cover_url(book)
+        for book in books
+    }
     subjects_raw = _safe_list_options(list_subjects)
     categories_raw = _safe_list_options(list_categories)
 
@@ -132,7 +166,8 @@ def list_books_view():
 
     return render_template(
         "library/index.html",
-        books=books or [],
+        books=books,
+        book_covers=book_covers,
         subjects=subjects,
         categories=categories,
         keyword=keyword,
@@ -179,6 +214,7 @@ def book_detail(book_id):
     return render_template(
         "library/detail.html",
         book=book,
+        cover_url=_book_cover_url(book),
         quiz_by_subject_url=quiz_by_subject_url,
         quiz_by_topic_url=quiz_by_topic_url,
     )
@@ -195,8 +231,10 @@ def _get_field(obj, *names, default=None):
             if name in obj and obj[name] not in (None, ""):
                 return obj[name]
         else:
-            if hasattr(obj, name):
-                value = getattr(obj, name)
-                if value not in (None, ""):
-                    return value
+            try:
+                value = obj[name]
+            except (IndexError, KeyError, TypeError):
+                value = getattr(obj, name, None)
+            if value not in (None, ""):
+                return value
     return default
