@@ -49,7 +49,7 @@ def login_required(view):
     @wraps(view)
     def wrapped(*args, **kwargs):
         if not current_user():
-            flash('Em hãy đăng nhập để tiếp tục nhé.', 'warning')
+            flash('Hãy đăng nhập để tiếp tục', 'warning')
             return redirect(url_for('login'))
         return view(*args, **kwargs)
     return wrapped
