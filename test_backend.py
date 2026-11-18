@@ -86,9 +86,9 @@ def main():
             assert home_html.index('map-frame') < home_html.index('<footer class="footer">')
             for footer_text in (
                 'Study Quest – Smart Exam Planner',
-                'Dự án Tin học lớp 12A1 Hoàng Diệu',
+                'Dự án Tin học nhóm 2 lớp 12A1 Hoàng Diệu',
                 'Liên hệ: 12A1 Hoàng Diệu',
-                '© 2026 Study Quest. Bản quyền thuộc về nhóm thực hiện.',
+                '© 2026 Study Quest. Bản quyền thuộc về nhóm 2 thực hiện.',
             ):
                 assert footer_text in home_html
 
