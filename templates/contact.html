@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block title %}Liên Hệ — Study Quest{% endblock %}
+
+{% block content %}
+<section class="contact-section section-pad" aria-labelledby="contact-title">
+  <div class="container">
+    <div class="contact-layout">
+      <div class="contact-copy">
+        <span class="eyebrow">STUDY QUEST</span>
+        <h2 id="contact-title">Liên hệ với chúng tôi</h2>
+        <p>Bạn muốn tìm hiểu thêm về Study Quest, có góp ý hoặc cần hỗ trợ?</p>
+        <p>Hãy gửi lời nhắn cho chúng tôi.</p>
+        <div class="contact-card">
+          <strong>Study Quest – Smart Exam Planner</strong>
+          <p>Contact: 12A1 Hoàng Diệu</p>
+          <p>Dự án Tin học lớp 12A1 Hoàng Diệu</p>
+        </div>
+      </div>
+      <form class="contact-form" method="post" action="{{ url_for('contact') }}" aria-label="Biểu mẫu liên hệ">
+        <input type="hidden" name="csrf_token" value="{{ contact_csrf_token }}">
+        <label for="contact-name">Họ và tên</label>
+        <input class="input" type="text" id="contact-name" name="name" value="{{ contact_values.get('name', '') }}" maxlength="120" autocomplete="name" required>
+
+        <label for="contact-email">Email</label>
+        <input class="input" type="email" id="contact-email" name="email" value="{{ contact_values.get('email', '') }}" maxlength="254" autocomplete="email" required>
+
+        <label for="contact-subject">Chủ đề</label>
+        <select class="select" id="contact-subject" name="subject" required>
+          <option value="" {% if not contact_values.get('subject') %}selected{% endif %} disabled>Chọn chủ đề</option>
+          {% for option in ['Góp ý về website', 'Báo lỗi', 'Hỏi về tính năng', 'Khác'] %}
+            <option value="{{ option }}" {% if contact_values.get('subject') == option %}selected{% endif %}>{{ option }}</option>
+          {% endfor %}
+        </select>
+
+        <label for="contact-message">Nội dung câu hỏi</label>
+        <textarea class="textarea" id="contact-message" name="message" maxlength="2000" required>{{ contact_values.get('message', '') }}</textarea>
+
+        <button class="btn btn-primary" id="contact-submit" type="submit" aria-live="polite" data-cooldown="{{ contact_cooldown_remaining }}" {% if contact_cooldown_remaining %}disabled{% endif %}>{% if contact_cooldown_remaining %}Đã gửi — thử lại sau {{ contact_cooldown_remaining }} giây{% else %}Gửi lời nhắn{% endif %}</button>
+      </form>
+    </div>
+  </div>
+</section>
+{% endblock %}
