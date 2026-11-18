@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block title %}Tác giả — Study Quest{% endblock %}
+
+{% block content %}
+<section class="team-section section-pad" aria-labelledby="team-title">
+  <div class="container">
+    <div class="section-heading">
+      <span class="eyebrow">NHỮNG NGƯỜI ĐỨNG SAU STUDY QUEST</span>
+      <h1 id="team-title">Đội ngũ thực hiện</h1>
+      <p>Các Admin đóng góp gồm:</p>
+    </div>
+    <ul class="team-list">
+      <li class="team-member"><div class="team-member-heading"><strong>Admin 1 – Ngô Kim Ngân</strong><img class="team-signature" src="{{ url_for('static', filename='images/signature/ngo-kim-ngan.png') }}" alt="Chữ ký Ngô Kim Ngân"></div><span>Project Leader + System Design</span></li>
+      <li class="team-member"><div class="team-member-heading"><strong>Admin 2 – Đặng Huỳnh Thảo Nhi</strong><img class="team-signature" src="{{ url_for('static', filename='images/signature/dang-huynh-thao-nhi.png') }}" alt="Chữ ký Đặng Huỳnh Thảo Nhi"></div><span>Backend + Database</span></li>
+      <li class="team-member"><div class="team-member-heading"><strong>Admin 3 – Nguyễn Trần Gia Mỹ</strong><img class="team-signature" src="{{ url_for('static', filename='images/signature/nguyen-tran-gia-my.png') }}" alt="Chữ ký Nguyễn Trần Gia Mỹ"></div><span>Smart Exam Planner</span></li>
+      <li class="team-member"><div class="team-member-heading"><strong>Admin 4 – Quách Hồ Cát Tiên</strong><img class="team-signature" src="{{ url_for('static', filename='images/signature/quach-ho-cat-tien.png') }}" alt="Chữ ký Quách Hồ Cát Tiên"></div><span>Quiz System</span></li>
+      <li class="team-member"><div class="team-member-heading"><strong>Admin 5 – Khưu Bảo Châu</strong><img class="team-signature" src="{{ url_for('static', filename='images/signature/khuu-bao-chau.png') }}" alt="Chữ ký Khưu Bảo Châu"></div><span>Smart Learning Hub + Library</span></li>
+      <li class="team-member"><div class="team-member-heading"><strong>Admin 6 – Huỳnh Nhật Huy</strong><img class="team-signature" src="{{ url_for('static', filename='images/signature/huynh-nhat-huy.png') }}" alt="Chữ ký Huỳnh Nhật Huy"></div><span>Frontend + UI/UX</span></li>
+      <li class="team-member"><div class="team-member-heading"><strong>Admin 7 – Nguyễn Thành Hậu</strong><img class="team-signature" src="{{ url_for('static', filename='images/signature/nguyen-thanh-hau.png') }}" alt="Chữ ký Nguyễn Thành Hậu"></div><span>RPG + Security + Testing</span></li>
+    </ul>
+  </div>
+</section>
+{% endblock %}
