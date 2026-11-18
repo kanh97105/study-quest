@@ -47,19 +47,72 @@ def main():
 
             books = list_books(subject='Toán')
             assert len(books) > 0 and get_book(books[0]['id']) is not None
+            all_books = list_books()
+            expected_covers = {
+                'Chinh phục Toán 12': 'images/library/toan.png',
+                'Kỹ năng tự học hiệu quả': 'images/library/tuhoc.png',
+                'Ngữ pháp tiếng Anh THPT': 'images/library/ta.png',
+                'Sổ tay Hóa hữu cơ': 'images/library/hoa.png',
+                'Vật lý 12 trọng tâm': 'images/library/vatly.png',
+            }
+            assert len(all_books) == len(expected_covers)
+            for book in all_books:
+                assert book['author'] == 'StudyQuest'
+                assert book['cover_url'] == expected_covers[book['title']]
 
         with app.test_client() as client:
+            library_response = client.get('/library/')
+            assert library_response.status_code == 200
+            for cover in expected_covers.values():
+                image_url = f'/static/{cover}'
+                assert image_url.encode() in library_response.data
+                assert client.get(image_url).status_code == 200
+
+            detail_response = client.get(f'/library/{books[0]["id"]}')
+            assert detail_response.status_code == 200
+            assert b'/static/images/library/toan.png' in detail_response.data
+
             homepage = client.get('/')
             assert homepage.status_code == 200
-            assert b'Li\xc3\xaan h\xe1\xbb\x87 v\xe1\xbb\x9bi ch\xc3\xbang t\xc3\xb4i' in homepage.data
+            home_html = homepage.get_data(as_text=True)
+            assert 'Về dự án' not in home_html
+            assert 'Đội ngũ thực hiện' not in home_html
+            assert 'Liên hệ với chúng tôi' not in home_html
             assert b'home-section-menu' not in homepage.data
+            assert 'href="/contact">Liên Hệ</a>' in home_html
+            assert 'href="/authors">Tác giả</a>' in home_html
+            assert 'https://maps.google.com/maps?cid=2865736048620238977&amp;output=embed' in home_html
+            assert 'target="_blank" rel="noopener noreferrer"' in home_html
+            assert home_html.index('map-frame') < home_html.index('<footer class="footer">')
             for footer_text in (
                 'Study Quest – Smart Exam Planner',
                 'Dự án Tin học lớp 12A1 Hoàng Diệu',
                 'Liên hệ: 12A1 Hoàng Diệu',
                 '© 2026 Study Quest. Bản quyền thuộc về nhóm thực hiện.',
             ):
-                assert footer_text.encode('utf-8') in homepage.data
+                assert footer_text in home_html
+
+            authors_page = client.get('/authors')
+            assert authors_page.status_code == 200
+            assert 'Đội ngũ thực hiện' in authors_page.get_data(as_text=True)
+            signature_images = (
+                'images/signature/ngo-kim-ngan.png',
+                'images/signature/dang-huynh-thao-nhi.png',
+                'images/signature/nguyen-tran-gia-my.png',
+                'images/signature/quach-ho-cat-tien.png',
+                'images/signature/khuu-bao-chau.png',
+                'images/signature/huynh-nhat-huy.png',
+                'images/signature/nguyen-thanh-hau.png',
+            )
+            for image in signature_images:
+                image_url = f'/static/{image}'
+                assert image_url.encode() in authors_page.data
+                assert client.get(image_url).status_code == 200
+
+            contact_page = client.get('/contact')
+            assert contact_page.status_code == 200
+            assert 'Liên hệ với chúng tôi'.encode('utf-8') in contact_page.data
+            assert b'aria-label="Bi\xe1\xbb\x83u m\xe1\xba\xabu li\xc3\xaan h\xe1\xbb\x87"' in contact_page.data
             with client.session_transaction() as browser_session:
                 csrf_token = browser_session['contact_csrf']
 
@@ -137,9 +190,9 @@ def main():
 
             with client.session_transaction() as browser_session:
                 browser_session['contact_last_sent'] = time.time() - 16
-            next_homepage = client.get('/')
-            assert next_homepage.status_code == 200
-            assert b'data-cooldown="0" >G\xe1\xbb\xadi l\xe1\xbb\x9di nh\xe1\xba\xafn</button>' in next_homepage.data
+            next_contact_page = client.get('/contact')
+            assert next_contact_page.status_code == 200
+            assert b'data-cooldown="0" >G\xe1\xbb\xadi l\xe1\xbb\x9di nh\xe1\xba\xafn</button>' in next_contact_page.data
             with client.session_transaction() as browser_session:
                 csrf_token = browser_session['contact_csrf']
             next_success = client.post(

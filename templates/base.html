@@ -37,6 +37,8 @@
           <a class="nav-link{% if request.path.startswith('/quiz') %} is-active{% endif %}" href="/quiz">Quiz</a>
           <a class="nav-link{% if request.path.startswith('/library') %} is-active{% endif %}" href="/library">Library</a>
           <a class="nav-link{% if request.path.startswith('/profile') %} is-active{% endif %}" href="/profile">Profile</a>
+          <a class="nav-link{% if request.path.startswith('/contact') %} is-active{% endif %}" href="{{ url_for('contact') }}">Liên Hệ</a>
+          <a class="nav-link{% if request.path.startswith('/authors') %} is-active{% endif %}" href="{{ url_for('authors') }}">Tác giả</a>
           {% if current_user %}
           {% if current_user['role'] == 'admin' %}
           <a class="nav-link{% if request.path.startswith('/admin/contact-messages') %} is-active{% endif %}" href="{{ url_for('admin_contact_messages') }}">Lời nhắn</a>
@@ -80,6 +82,23 @@
   <main id="main-content">
     {% block content %}{% endblock %}
   </main>
+
+  <footer class="footer">
+    <div class="container footer-inner">
+      <a class="footer-brand" href="/">
+        <img src="{{ url_for('static', filename='images/study-quest-mark.svg') }}" alt="" width="28" height="28">
+        <span>Study Quest</span>
+      </a>
+      <div class="footer-copy">
+        <p>Học tốt, chơi vui. Mỗi ngày tiến thêm một chút.</p>
+        <p>Study Quest – Smart Exam Planner</p>
+        <p>Dự án Tin học lớp 12A1 Hoàng Diệu</p>
+        <p>Liên hệ: 12A1 Hoàng Diệu</p>
+        <p>© 2026 Study Quest. Bản quyền thuộc về nhóm thực hiện.</p>
+      </div>
+      <div class="footer-links"><a href="/planner">Planner</a><a href="/quiz">Quiz</a><a href="/library">Library</a><a href="/login">Đăng nhập</a></div>
+    </div>
+  </footer>
 
   {% block scripts %}
     <script src="{{ url_for('static', filename='js/app.js') }}" defer></script>

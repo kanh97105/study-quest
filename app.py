@@ -29,6 +29,8 @@ app.config.update(
     SESSION_COOKIE_SAMESITE='Lax',
     SESSION_COOKIE_SECURE=os.environ.get('COOKIE_SECURE', '0') == '1',
 )
+GOOGLE_MAPS_URL = 'https://www.google.com/maps?cid=2865736048620238977&g_mp=CiVnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLkdldFBsYWNlEAMYASAF'
+GOOGLE_MAPS_EMBED_URL = 'https://maps.google.com/maps?cid=2865736048620238977&output=embed'
 
 app.teardown_appcontext(close_db)
 app.register_blueprint(exam_bp)
@@ -110,17 +112,17 @@ def generate_plan(exam_id, exam_date, minutes, topic_names):
 
 @app.context_processor
 def inject_globals():
-    return {'current_user': current_user(), 'today': date.today().isoformat()}
+    return {
+        'current_user': current_user(),
+        'today': date.today().isoformat(),
+        'google_maps_url': GOOGLE_MAPS_URL,
+        'google_maps_embed_url': GOOGLE_MAPS_EMBED_URL,
+    }
 
 
 @app.route('/')
 def index():
-    return render_template(
-        'index.html',
-        contact_csrf_token=_contact_csrf_token(),
-        contact_values={},
-        contact_cooldown_remaining=_contact_cooldown_remaining(),
-    )
+    return render_template('index.html')
 
 
 CONTACT_COOLDOWN_SECONDS = 15
@@ -141,13 +143,21 @@ def _contact_csrf_token():
     return token
 
 
-@app.post('/contact')
+@app.route('/contact', methods=['GET', 'POST'])
 def contact():
+    if request.method == 'GET':
+        return render_template(
+            'contact.html',
+            contact_csrf_token=_contact_csrf_token(),
+            contact_values={},
+            contact_cooldown_remaining=_contact_cooldown_remaining(),
+        )
+
     expected_token = session.get('contact_csrf', '')
     posted_token = request.form.get('csrf_token', '')
     if not expected_token or not secrets.compare_digest(str(expected_token), str(posted_token)):
         flash('Phiên gửi lời nhắn không hợp lệ. Em tải lại trang rồi thử lại nhé.', 'warning')
-        return redirect(url_for('index') + '#lien-he')
+        return redirect(url_for('contact'))
 
     name = request.form.get('name', '').strip()
     email = request.form.get('email', '').strip()
@@ -181,7 +191,7 @@ def contact():
     if error:
         flash(error, 'warning')
         return render_template(
-            'index.html',
+            'contact.html',
             contact_csrf_token=_contact_csrf_token(),
             contact_values=contact_values,
             contact_cooldown_remaining=_contact_cooldown_remaining(),
@@ -191,7 +201,7 @@ def contact():
     if cooldown_remaining:
         flash(f'Em có thể gửi lời nhắn tiếp theo sau {cooldown_remaining} giây nữa nhé.', 'warning')
         return render_template(
-            'index.html',
+            'contact.html',
             contact_csrf_token=_contact_csrf_token(),
             contact_values=contact_values,
             contact_cooldown_remaining=cooldown_remaining,
@@ -206,7 +216,12 @@ def contact():
     session.pop('contact_csrf', None)
     session['contact_last_sent'] = time.time()
     flash('Đã gửi lời nhắn thành công.', 'success')
-    return redirect(url_for('index') + '#lien-he')
+    return redirect(url_for('contact'))
+
+
+@app.route('/authors')
+def authors():
+    return render_template('authors.html')
 
 
 @app.route('/manus-routes.json')

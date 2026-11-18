@@ -115,92 +115,28 @@
     <span class="closing-star" aria-hidden="true">✳</span>
   </div>
 </section>
-<section class="about-project-section section-pad" id="ve-du-an" aria-labelledby="about-project-title">
+<section class="map-section section-pad" id="ban-do" aria-labelledby="map-title">
   <div class="container">
     <div class="section-heading">
-      <span class="eyebrow">VỀ STUDY QUEST</span>
-      <h2 id="about-project-title">Về dự án</h2>
-      <p class="about-project-subtitle">Study Quest – Cùng nhau viết nên hành trình học tập</p>
+      <span class="eyebrow">ĐỊA CHỈ CỦA NHÓM</span>
+      <h2 id="map-title">Tìm chúng mình trên bản đồ</h2>
+      <p>12A1 Hoàng Diệu</p>
     </div>
-    <div class="about-project-copy">
-      <p>Study Quest là một dự án nhỏ được xây dựng với mong muốn tạo ra một không gian học tập thân thiện, nơi việc học không chỉ là những bài kiểm tra và áp lực, mà còn là một hành trình khám phá đầy thú vị.</p>
-      <p>Chúng mình hy vọng website có thể giúp các bạn học sinh sắp xếp kế hoạch học tập, lưu giữ kiến thức, luyện tập hiệu quả và tìm thêm động lực để cố gắng mỗi ngày.</p>
-      <p>Mỗi mục tiêu hoàn thành, mỗi kiến thức mới đạt được đều là một bước tiến nhỏ trên hành trình lớn. Cảm ơn bạn đã ghé thăm và đồng hành cùng Study Quest.</p>
-    </div>
-  </div>
-</section>
-<section class="team-section section-pad" id="doi-ngu" aria-labelledby="team-title">
-  <div class="container">
-    <div class="section-heading">
-      <span class="eyebrow">NHỮNG NGƯỜI ĐỨNG SAU STUDY QUEST</span>
-      <h2 id="team-title">Đội ngũ thực hiện</h2>
-      <p>Các Admin đóng góp gồm:</p>
-    </div>
-    <ul class="team-list">
-      <li class="team-member"><strong>Admin 1 – Ngô Kim Ngân</strong><span>Project Leader + System Design</span></li>
-      <li class="team-member"><strong>Admin 2 – Đặng Huỳnh Thảo Nhi</strong><span>Backend + Database</span></li>
-      <li class="team-member"><strong>Admin 3 – Nguyễn Trần Gia Mỹ</strong><span>Smart Exam Planner</span></li>
-      <li class="team-member"><strong>Admin 4 – Quách Hồ Cát Tiên</strong><span>Quiz System</span></li>
-      <li class="team-member"><strong>Admin 5 – Khưu Bảo Châu</strong><span>Smart Learning Hub + Library</span></li>
-      <li class="team-member"><strong>Admin 6 – Huỳnh Nhật Huy</strong><span>Frontend + UI/UX</span></li>
-      <li class="team-member"><strong>Admin 7 – Nguyễn Thành Hậu</strong><span>RPG + Security + Testing</span></li>
-    </ul>
-  </div>
-</section>
-<section class="contact-section section-pad" id="lien-he" aria-labelledby="contact-title">
-  <div class="container">
-    <div class="contact-layout">
-      <div class="contact-copy">
-        <span class="eyebrow">STUDY QUEST</span>
-        <h2 id="contact-title">Liên hệ với chúng tôi</h2>
-        <p>Bạn muốn tìm hiểu thêm về Study Quest, có góp ý hoặc cần hỗ trợ?</p>
-        <p>Hãy gửi lời nhắn cho chúng tôi.</p>
-        <div class="contact-card">
-          <strong>Study Quest – Smart Exam Planner</strong>
-          <p>Contact: 12A1 Hoàng Diệu</p>
-          <p>Dự án Tin học lớp 12A1 Hoàng Diệu</p>
-        </div>
-      </div>
-      <form class="contact-form" method="post" action="{{ url_for('contact') }}" aria-label="Biểu mẫu liên hệ">
-        <input type="hidden" name="csrf_token" value="{{ contact_csrf_token }}">
-        <label for="contact-name">Họ và tên</label>
-        <input class="input" type="text" id="contact-name" name="name" value="{{ contact_values.get('name', '') }}" maxlength="120" autocomplete="name" required>
-
-        <label for="contact-email">Email</label>
-        <input class="input" type="email" id="contact-email" name="email" value="{{ contact_values.get('email', '') }}" maxlength="254" autocomplete="email" required>
-
-        <label for="contact-subject">Chủ đề</label>
-        <select class="select" id="contact-subject" name="subject" required>
-          <option value="" {% if not contact_values.get('subject') %}selected{% endif %} disabled>Chọn chủ đề</option>
-          {% for option in ['Góp ý về website', 'Báo lỗi', 'Hỏi về tính năng', 'Khác'] %}
-            <option value="{{ option }}" {% if contact_values.get('subject') == option %}selected{% endif %}>{{ option }}</option>
-          {% endfor %}
-        </select>
-
-        <label for="contact-message">Nội dung câu hỏi</label>
-        <textarea class="textarea" id="contact-message" name="message" maxlength="2000" required>{{ contact_values.get('message', '') }}</textarea>
-
-        <button class="btn btn-primary" id="contact-submit" type="submit" aria-live="polite" data-cooldown="{{ contact_cooldown_remaining }}" {% if contact_cooldown_remaining %}disabled{% endif %}>{% if contact_cooldown_remaining %}Đã gửi — thử lại sau {{ contact_cooldown_remaining }} giây{% else %}Gửi lời nhắn{% endif %}</button>
-      </form>
+    <div class="map-card">
+      <iframe
+        class="map-frame"
+        src="{{ google_maps_embed_url }}"
+        title="Bản đồ địa chỉ 12A1 Hoàng Diệu trên Google Maps"
+        loading="lazy"
+        referrerpolicy="no-referrer-when-downgrade"
+        allowfullscreen
+      ></iframe>
+      <a class="btn btn-primary map-link" href="{{ google_maps_url }}" target="_blank" rel="noopener noreferrer">
+        Mở địa chỉ trong Google Maps <span aria-hidden="true">↗</span>
+      </a>
     </div>
   </div>
 </section>
-<footer class="footer">
-  <div class="container footer-inner">
-    <a class="footer-brand" href="/">
-      <img src="{{ url_for('static', filename='images/study-quest-mark.svg') }}" alt="" width="28" height="28">
-      <span>Study Quest</span>
-    </a>
-    <div class="footer-copy">
-      <p>Học tốt, chơi vui. Mỗi ngày tiến thêm một chút.</p>
-      <p>Study Quest – Smart Exam Planner</p>
-      <p>Dự án Tin học lớp 12A1 Hoàng Diệu</p>
-      <p>Liên hệ: 12A1 Hoàng Diệu</p>
-      <p>© 2026 Study Quest. Bản quyền thuộc về nhóm thực hiện.</p>
-    </div>
-    <div class="footer-links"><a href="/planner">Planner</a><a href="/quiz">Quiz</a><a href="/library">Library</a><a href="/login">Đăng nhập</a></div>
-  </div>
-</footer>
 {% endblock %}
 
 {% block scripts %}{{ super() }}{% endblock %}
