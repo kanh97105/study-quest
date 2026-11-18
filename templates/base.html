@@ -32,13 +32,13 @@
       <div class="nav-panel" id="primary-navigation">
         <div class="nav-links">
           <a class="nav-link{% if request.path == '/' %} is-active{% endif %}" href="/">Trang chủ</a>
+          <a class="nav-link{% if request.path.startswith('/authors') %} is-active{% endif %}" href="{{ url_for('authors') }}">Tác giả</a>
+          <a class="nav-link{% if request.path.startswith('/contact') %} is-active{% endif %}" href="{{ url_for('contact') }}">Liên hệ</a>
           <a class="nav-link{% if request.path.startswith('/dashboard') %} is-active{% endif %}" href="/dashboard">Dashboard</a>
           <a class="nav-link{% if request.path.startswith('/planner') %} is-active{% endif %}" href="/planner">Planner</a>
           <a class="nav-link{% if request.path.startswith('/quiz') %} is-active{% endif %}" href="/quiz">Quiz</a>
           <a class="nav-link{% if request.path.startswith('/library') %} is-active{% endif %}" href="/library">Library</a>
           <a class="nav-link{% if request.path.startswith('/profile') %} is-active{% endif %}" href="/profile">Profile</a>
-          <a class="nav-link{% if request.path.startswith('/contact') %} is-active{% endif %}" href="{{ url_for('contact') }}">Liên Hệ</a>
-          <a class="nav-link{% if request.path.startswith('/authors') %} is-active{% endif %}" href="{{ url_for('authors') }}">Tác giả</a>
           {% if current_user %}
           {% if current_user['role'] == 'admin' %}
           <a class="nav-link{% if request.path.startswith('/admin/contact-messages') %} is-active{% endif %}" href="{{ url_for('admin_contact_messages') }}">Lời nhắn</a>
