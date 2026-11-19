@@ -55,11 +55,6 @@
               <progress max="100" value="{{ current_user['exp'] % 100 }}"></progress>
             </span>
           </a>
-          <a class="btn btn-ghost btn-small" href="{{ url_for('change_password') }}">Đổi mật khẩu</a>
-          <a class="btn btn-ghost btn-small rpg-logout" href="/logout">Đăng xuất</a>
-          {% else %}
-          <a class="btn btn-ghost btn-small" href="/login">Đăng nhập</a>
-          <a class="btn btn-primary btn-small" href="/register">Bắt đầu</a>
           {% endif %}
         </div>
       </div>
@@ -96,7 +91,7 @@
         <p>Liên hệ: 12A1 Hoàng Diệu</p>
         <p>© 2026 Study Quest. Bản quyền thuộc về nhóm 2 thực hiện.</p>
       </div>
-      <div class="footer-links"><a href="/planner">Planner</a><a href="/quiz">Quiz</a><a href="/library">Library</a><a href="/login">Đăng nhập</a></div>
+      <div class="footer-links"><a href="/planner">Planner</a><a href="/quiz">Quiz</a><a href="/library">Library</a></div>
     </div>
   </footer>
 

@@ -39,6 +39,46 @@ app.register_blueprint(library_bp)
 app.register_blueprint(profile_bp)
 
 
+def ensure_guest_session():
+    """Use a built-in guest account so features work without sign-in."""
+    user_id = session.get('user_id')
+    if user_id and find_by_id(user_id) is not None:
+        return
+
+    db = get_db()
+    guest = db.execute(
+        'SELECT id FROM users WHERE username=?',
+        ('guest',),
+    ).fetchone()
+    if guest is None:
+        cursor = db.execute(
+            'INSERT INTO users(username,email,password_hash,role) VALUES(?,?,?,?)',
+            ('guest', 'guest@studyquest.local', generate_password_hash(secrets.token_urlsafe(32)), 'user'),
+        )
+        guest_id = cursor.lastrowid
+        db.execute(
+            'INSERT INTO profiles(user_id,character_name,avatar) VALUES(?,?,?)',
+            (guest_id, 'Quest Guest', '🧙'),
+        )
+        db.commit()
+    else:
+        guest_id = guest['id']
+        if db.execute('SELECT 1 FROM profiles WHERE user_id=?', (guest_id,)).fetchone() is None:
+            db.execute(
+                'INSERT INTO profiles(user_id,character_name,avatar) VALUES(?,?,?)',
+                (guest_id, 'Quest Guest', '🧙'),
+            )
+            db.commit()
+
+    session.clear()
+    session['user_id'] = guest_id
+
+
+@app.before_request
+def start_guest_session():
+    ensure_guest_session()
+
+
 def current_user():
     if 'user_id' not in session:
         return None
@@ -231,32 +271,19 @@ def route_manifest():
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
-    if request.method == 'POST':
-        username = request.form.get('username', '').strip(); email = request.form.get('email', '').strip(); password = request.form.get('password', '')
-        if len(username) < 3 or len(password) < 6 or '@' not in email:
-            flash('Tên đăng nhập từ 3 ký tự, email hợp lệ và mật khẩu ít nhất 6 ký tự.', 'warning')
-        else:
-            try:
-                db = get_db(); cur = db.execute('INSERT INTO users(username,email,password_hash) VALUES(?,?,?)', (username, email, generate_password_hash(password)))
-                db.execute('INSERT INTO profiles(user_id,character_name) VALUES(?,?)', (cur.lastrowid, username.title()))
-                db.commit(); flash('Tạo tài khoản thành công. Em đăng nhập nhé!', 'success'); return redirect(url_for('login'))
-            except sqlite3.IntegrityError: flash('Tên đăng nhập hoặc email đã tồn tại.', 'warning')
-    return render_template('auth/register.html')
+    return redirect(url_for('dashboard'))
 
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    if request.method == 'POST':
-        user = get_db().execute('SELECT * FROM users WHERE username=? OR email=?', (request.form.get('identity','').strip(), request.form.get('identity','').strip())).fetchone()
-        if user and check_password_hash(user['password_hash'], request.form.get('password', '')):
-            session.clear(); session['user_id'] = user['id']; return redirect(url_for('dashboard'))
-        flash('Thông tin đăng nhập chưa đúng.', 'warning')
-    return render_template('auth/login.html')
+    return redirect(url_for('dashboard'))
 
 
 @app.route('/logout')
 def logout():
-    session.clear(); return redirect(url_for('index'))
+    session.clear()
+    ensure_guest_session()
+    return redirect(url_for('index'))
 
 
 @app.route('/change-password', methods=['GET', 'POST'])

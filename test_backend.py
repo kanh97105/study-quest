@@ -61,6 +61,19 @@ def main():
                 assert book['cover_url'] == expected_covers[book['title']]
 
         with app.test_client() as client:
+            login_response = client.get('/login')
+            assert login_response.status_code == 302
+            assert login_response.location.endswith('/dashboard')
+            register_response = client.post('/register')
+            assert register_response.status_code == 302
+            assert register_response.location.endswith('/dashboard')
+            with client.session_transaction() as browser_session:
+                guest_user_id = browser_session['user_id']
+            assert client.get('/dashboard').status_code == 200
+            assert client.get('/logout').status_code == 302
+            with client.session_transaction() as browser_session:
+                assert browser_session['user_id'] == guest_user_id
+
             library_response = client.get('/library/')
             assert library_response.status_code == 200
             for cover in expected_covers.values():
@@ -75,11 +88,13 @@ def main():
             homepage = client.get('/')
             assert homepage.status_code == 200
             home_html = homepage.get_data(as_text=True)
+            assert '/login' not in home_html
+            assert '/register' not in home_html
             assert 'Về dự án' not in home_html
             assert 'Đội ngũ thực hiện' not in home_html
             assert 'Liên hệ với chúng tôi' not in home_html
             assert b'home-section-menu' not in homepage.data
-            assert 'href="/contact">Liên Hệ</a>' in home_html
+            assert 'href="/contact">Liên hệ</a>' in home_html
             assert 'href="/authors">Tác giả</a>' in home_html
             assert 'https://maps.google.com/maps?cid=2865736048620238977&amp;output=embed' in home_html
             assert 'target="_blank" rel="noopener noreferrer"' in home_html
